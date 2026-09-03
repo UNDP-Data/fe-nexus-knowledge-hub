@@ -88,7 +88,7 @@ function App() {
             >
               <H3>Recent Reports</H3>
             </GridItem>
-            {data?.slice(0, 4).map((report) => (
+            {data?.slice(0, 5).map((report) => (
               <GridItem
                 key={report.Title}
                 noOfColSpan={{
