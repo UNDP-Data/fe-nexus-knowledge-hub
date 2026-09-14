@@ -16,8 +16,22 @@ import type { DocumentDataType } from './Types';
 
 function useRecentReportData() {
   return useQuery({
-    queryKey: ['recent-reports'],
-    queryFn: () => fetchAndParseCSV('/data/data.csv') as Promise<DocumentDataType[]>,
+    queryKey: ['all-reports'],
+    queryFn: async () => {
+      const data = (await fetchAndParseCSV('/data/data.csv')) as DocumentDataType[];
+      if (!data || data.length === 0) return [];
+      const formattedData = data.map((item, i) => {
+        return {
+          ...item,
+          'Region / Country': item['Region / Country']?.split(',') || [],
+          'DAC Recommendation': item['DAC Recommendation']?.split(',') || [],
+          'HDP Tags': item['HDP Tags']?.split(',') || [],
+          Language: item['Language']?.split(',') || [],
+          id: `doc-${i + 1}`,
+        };
+      });
+      return formattedData;
+    },
   });
 }
 
@@ -90,7 +104,7 @@ function App() {
             </GridItem>
             {data?.slice(0, 5).map((report) => (
               <GridItem
-                key={report.Title}
+                key={report.id}
                 noOfColSpan={{
                   base: 1,
                   md: 1,

@@ -29,16 +29,17 @@ import type { DocumentDataType } from '@/Types';
 
 function useRecentReportData() {
   return useQuery({
-    queryKey: ['recent-reports'],
+    queryKey: ['all-reports'],
     queryFn: async () => {
       const data = (await fetchAndParseCSV('/data/data.csv')) as DocumentDataType[];
+      if (!data || data.length === 0) return [];
       const formattedData = data.map((item, i) => {
         return {
           ...item,
-          'Region / Country': item['Region / Country']?.split(','),
-          'DAC Recommendation': item['DAC Recommendation']?.split(','),
-          'HDP Tags': item['HDP Tags']?.split(','),
-          Language: item['Language']?.split(','),
+          'Region / Country': item['Region / Country']?.split(',') || [],
+          'DAC Recommendation': item['DAC Recommendation']?.split(',') || [],
+          'HDP Tags': item['HDP Tags']?.split(',') || [],
+          Language: item['Language']?.split(',') || [],
           id: `doc-${i + 1}`,
         };
       });
@@ -140,10 +141,10 @@ export function AllReportsPage() {
           />
         </div>
         <Spacer size='2xl' />
-        {isLoading ? (
-          <Spinner size='lg' className='mx-auto my-20' />
-        ) : isError ? (
+        {isError ? (
           <>Error</>
+        ) : isLoading || !data ? (
+          <Spinner size='lg' className='mx-auto my-20' />
         ) : (
           <>
             <div className='flex w-full flex-wrap items-center gap-4'>
@@ -397,7 +398,7 @@ export function AllReportsPage() {
                             </div>
                           </>
                         )}
-                        {report['Region / Country']?.length && (
+                        {report['Region / Country']?.length > 0 && (
                           <>
                             <Spacer size='2xl' />
                             <div className='flex flex-col gap-2'>
