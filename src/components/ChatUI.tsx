@@ -1,11 +1,8 @@
+import { Avatar, AvatarFallback } from '@undp/design-system-react/Avatar';
+import { Bubble, BubbleContent, BubbleGroup } from '@undp/design-system-react/Bubble';
 import { Button } from '@undp/design-system-react/Button';
 import { Input } from '@undp/design-system-react/Input';
-import {
-  Message,
-  MessageContent,
-  MessageGroup,
-  MessageHeader,
-} from '@undp/design-system-react/Message';
+import { Message, MessageContent, MessageGroup } from '@undp/design-system-react/Message';
 import {
   MessageScroller,
   MessageScrollerContent,
@@ -14,7 +11,7 @@ import {
   MessageScrollerViewport,
 } from '@undp/design-system-react/MessageScroller';
 import { P } from '@undp/design-system-react/Typography';
-import { MessagesSquare, Send, X } from 'lucide-react';
+import { Bot, MessagesSquare, Send, User, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface ConversationDataType {
@@ -29,17 +26,17 @@ export function ChatbotUI() {
   return (
     <div className='fixed right-8 bottom-8 z-5 flex flex-col items-end'>
       {open && (
-        <div className='mb-4 w-150 bg-background shadow-md'>
-          <div className='flex items-center justify-between gap-8 bg-surface-sm p-4'>
-            <P weight='bold' marginBottom='none' size='base'>
+        <div className='mb-4 w-150 rounded-lg border border-stroke bg-surface'>
+          <div className='flex items-center justify-between gap-8 border-stroke border-b p-4'>
+            <P weight='bold' marginBottom='none' size='lg'>
               Chatbot
             </P>
             <Button onClick={() => setOpen(false)} variant='icon' className='p-0'>
-              <X />
+              <X size={24} />
             </Button>
           </div>
           <MessageScrollerProvider>
-            <MessageScroller className='min-h-120 w-full'>
+            <MessageScroller className='min-h-120 w-full bg-background'>
               <MessageScrollerViewport>
                 <MessageScrollerContent className='p-4'>
                   {conversation.map((item, idx) => (
@@ -47,21 +44,23 @@ export function ChatbotUI() {
                     <MessageScrollerItem key={idx}>
                       <MessageGroup>
                         <Message align={item.sender === 'user' ? 'end' : 'start'}>
-                          <MessageContent className='w-fit max-w-full'>
-                            <MessageHeader
-                              className={
-                                item.sender === 'user'
-                                  ? 'text-accent-blue text-base'
-                                  : 'text-accent-orange text-base'
-                              }
-                            >
-                              {item.sender === 'user' ? 'Me' : 'UNDP'}
-                            </MessageHeader>
-                            <div className='flex w-fit rounded-lg bg-surface px-3 py-2'>
-                              <P marginBottom='none' size='base'>
-                                {item.message}
-                              </P>
-                            </div>
+                          <Avatar>
+                            {item.sender === 'user' ? (
+                              <AvatarFallback border={false} color='secondary'>
+                                <User size={20} />
+                              </AvatarFallback>
+                            ) : (
+                              <AvatarFallback border={false} color='primary'>
+                                <Bot size={20} />
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <MessageContent className='w-full'>
+                            <BubbleGroup className='w-full'>
+                              <Bubble variant={item.sender === 'user' ? 'secondary' : 'surface'}>
+                                <BubbleContent>{item.message}</BubbleContent>
+                              </Bubble>
+                            </BubbleGroup>
                           </MessageContent>
                         </Message>
                       </MessageGroup>
@@ -108,9 +107,13 @@ export function ChatbotUI() {
           </div>
         </div>
       )}
-      <Button onClick={() => setOpen(!open)} variant='primary' arrow={false} rounded='full'>
-        {open ? <X /> : <MessagesSquare />}
-      </Button>
+      <button
+        onClick={() => setOpen(!open)}
+        type='button'
+        className='flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary text-content-reverse hover:bg-primary-hover'
+      >
+        {open ? <X size={32} /> : <MessagesSquare size={32} />}
+      </button>
     </div>
   );
 }

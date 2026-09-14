@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { fetchAndParseCSV } from '@undp/data-viz/fetchAndParseData';
 import {
   Banner,
@@ -6,12 +7,15 @@ import {
   BannerBodyContent,
   BannerBodySidebar,
 } from '@undp/design-system-react/Banner';
+import { Button } from '@undp/design-system-react/Button';
 import { Container } from '@undp/design-system-react/Container';
+import { Drawer, DrawerBody, DrawerContent, DrawerTrigger } from '@undp/design-system-react/Drawer';
 import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHeader';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
 import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
+import { ReportDetail } from './components/ReportDetail';
 import type { DocumentDataType } from './Types';
 
 function useRecentReportData() {
@@ -100,7 +104,11 @@ function App() {
                 sm: 1,
               }}
             >
-              <H3>Recent Reports</H3>
+              <H3 marginBottom='none'>Recent Reports</H3>
+              <Spacer size='2xl' />
+              <Button variant='link' padding='none'>
+                <Link to='/all-reports'>View All Reports</Link>
+              </Button>
             </GridItem>
             {data?.slice(0, 5).map((report) => (
               <GridItem
@@ -111,10 +119,23 @@ function App() {
                   sm: 1,
                 }}
               >
-                <div className='h-full bg-surface p-8'>
-                  <H4 weight='bold'>{report.Title}</H4>
-                  <P className='line-clamp-3'>{report.Abstract}</P>
-                </div>
+                <Drawer direction='right'>
+                  <DrawerTrigger className='h-full'>
+                    <div className='h-full cursor-pointer bg-surface p-8 hover:bg-surface-hover'>
+                      <P size='lg' weight='bold'>
+                        {report.Title}
+                      </P>
+                      <P size='base' className='line-clamp-3'>
+                        {report.Abstract}
+                      </P>
+                    </div>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerBody>
+                      <ReportDetail report={report} />
+                    </DrawerBody>
+                  </DrawerContent>
+                </Drawer>
               </GridItem>
             ))}
           </Grid>
