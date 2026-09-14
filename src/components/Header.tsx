@@ -14,6 +14,7 @@ export default function HeaderEl() {
         <HeaderMenuUnit>
           <Link to='/'>Home</Link>
           <Link to='/all-reports'>All Reports</Link>
+          <Link to='/add-report'>Add Report</Link>
         </HeaderMenuUnit>
       </HeaderMainNavUnit>
     </Header>

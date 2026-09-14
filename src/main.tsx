@@ -15,6 +15,7 @@ import createAllReportsRoute from './routes/AllReports/allReports.route';
 
 import './styles/fonts.css';
 import './styles/style.css';
+import createAddReportRoute from './routes/AddReport/addReport.route';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -36,7 +37,11 @@ const indexRoute = createRoute({
   component: App,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, createAllReportsRoute(rootRoute)]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  createAllReportsRoute(rootRoute),
+  createAddReportRoute(rootRoute),
+]);
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
 const router = createRouter({
