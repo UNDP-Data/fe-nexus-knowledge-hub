@@ -47,7 +47,7 @@ export function ChatbotUI() {
                     <MessageScrollerItem key={idx}>
                       <MessageGroup>
                         <Message align={item.sender === 'user' ? 'end' : 'start'}>
-                          <MessageContent>
+                          <MessageContent className='w-fit max-w-full'>
                             <MessageHeader
                               className={
                                 item.sender === 'user'
@@ -57,7 +57,11 @@ export function ChatbotUI() {
                             >
                               {item.sender === 'user' ? 'Me' : 'UNDP'}
                             </MessageHeader>
-                            <div className='rounded-lg bg-surface px-3 py-2'>{item.message}</div>
+                            <div className='flex w-fit rounded-lg bg-surface px-3 py-2'>
+                              <P marginBottom='none' size='base'>
+                                {item.message}
+                              </P>
+                            </div>
                           </MessageContent>
                         </Message>
                       </MessageGroup>

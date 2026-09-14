@@ -26,7 +26,6 @@ import { Calendar, FileText } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DAC_COLORS, HDP_TAG_COLORS, IMG_URL, REPORT_URL } from '@/constants';
 import type { DocumentDataType } from '@/Types';
-import { ChatbotUI } from './ChatUI';
 
 function useRecentReportData() {
   return useQuery({
@@ -493,7 +492,6 @@ export function AllReportsPage() {
           </>
         )}
       </Container>
-      <ChatbotUI />
     </>
   );
 }

@@ -15,6 +15,7 @@ import createAllReportsRoute from './routes/AllReports/allReports.route';
 
 import './styles/fonts.css';
 import './styles/style.css';
+import { ChatbotUI } from './components/ChatUI';
 import createAddReportRoute from './routes/AddReport/addReport.route';
 
 const rootRoute = createRootRoute({
@@ -27,6 +28,7 @@ const rootRoute = createRootRoute({
         </div>
       </main>
       <FooterEl />
+      <ChatbotUI />
     </div>
   ),
 });
