@@ -24,7 +24,7 @@ export interface DocumentFormattedDataType {
   'HDP Tags': string[];
   'Thematic Tags': string;
   'DAC Recommendation': string[];
-  Affiliations: string;
+  Affiliations: string[];
   Authors: string;
   'Publication Year': number;
   Language: string[];

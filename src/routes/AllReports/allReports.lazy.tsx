@@ -38,6 +38,7 @@ function useRecentReportData() {
           'DAC Recommendation': item['DAC Recommendation']?.split(',') || [],
           'HDP Tags': item['HDP Tags']?.split(',') || [],
           Language: item['Language']?.split(',') || [],
+          Affiliations: item['Affiliations']?.split(',') || [],
           id: `doc-${i + 1}`,
         };
       });
@@ -55,6 +56,7 @@ export function AllReportsPage() {
   const [dacRecommendation, setDacRecommendation] = useState<string[]>([]);
   const [publicationYear, setPublicationYear] = useState<string[]>([]);
   const [language, setLanguage] = useState<string[]>([]);
+  const [affiliations, setAffiliations] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {
     return data?.filter((report) => {
@@ -72,6 +74,8 @@ export function AllReportsPage() {
         publicationYear.length === 0 || publicationYear.includes(`${report['Publication Year']}`);
       const languageMatch =
         language.length === 0 || language.some((t) => report['Language'].includes(t));
+      const affiliationMatch =
+        affiliations.length === 0 || affiliations.some((t) => report['Affiliations'].includes(t));
       const searchStringMatch =
         searchString.length === 0 ||
         report['Title']?.toLowerCase().includes(searchString.toLowerCase()) ||
@@ -83,6 +87,7 @@ export function AllReportsPage() {
         dacRecommendationMatch &&
         publicationYearMatch &&
         languageMatch &&
+        affiliationMatch &&
         searchStringMatch
       );
     });
@@ -94,6 +99,7 @@ export function AllReportsPage() {
     dacRecommendation,
     publicationYear,
     language,
+    affiliations,
     searchString,
   ]);
 
@@ -138,7 +144,7 @@ export function AllReportsPage() {
         ) : (
           <>
             <div className='flex w-full flex-wrap items-center gap-4'>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by document type
                 </P>
@@ -161,7 +167,7 @@ export function AllReportsPage() {
                   isClearable
                 />
               </div>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by region/country
                 </P>
@@ -184,7 +190,7 @@ export function AllReportsPage() {
                   isClearable
                 />
               </div>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by HDP tags
                 </P>
@@ -207,7 +213,7 @@ export function AllReportsPage() {
                   isClearable
                 />
               </div>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by DAC recommendation
                 </P>
@@ -230,7 +236,7 @@ export function AllReportsPage() {
                   isClearable
                 />
               </div>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by publication year
                 </P>
@@ -253,7 +259,7 @@ export function AllReportsPage() {
                   isClearable
                 />
               </div>
-              <div>
+              <div className='min-w-50'>
                 <P size='sm' marginBottom='sm' className='text-content-tertiary'>
                   Filter by language
                 </P>
@@ -264,6 +270,29 @@ export function AllReportsPage() {
                     setLanguage(d.map((item) => `${item.value}`));
                   }}
                   options={[...new Set(data?.flatMap((report) => report['Language']))]
+                    .filter((item) => item)
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((item) => ({
+                      label: item,
+                      value: item,
+                    }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='sm' className='text-content-tertiary'>
+                  Filter by affiliations
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setAffiliations(d.map((item) => `${item.value}`));
+                  }}
+                  options={[...new Set(data?.flatMap((report) => report['Affiliations']))]
                     .filter((item) => item)
                     .sort((a, b) => a.localeCompare(b))
                     .map((item) => ({

@@ -31,6 +31,7 @@ function useRecentReportData() {
           'DAC Recommendation': item['DAC Recommendation']?.split(',') || [],
           'HDP Tags': item['HDP Tags']?.split(',') || [],
           Language: item['Language']?.split(',') || [],
+          Affiliations: item['Affiliations']?.split(',') || [],
           id: `doc-${i + 1}`,
         };
       });

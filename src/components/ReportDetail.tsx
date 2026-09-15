@@ -148,7 +148,7 @@ export function ReportDetail({ report }: { report: DocumentFormattedDataType }) 
             </P>
             <div className='flex flex-wrap gap-2'>
               <P marginBottom='none' size='base'>
-                {report.Affiliations}
+                {report.Affiliations.join(', ')}
               </P>
             </div>
           </div>
