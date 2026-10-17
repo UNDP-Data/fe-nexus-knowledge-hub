@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { fetchAndParseCSV } from '@undp/data-viz/fetchAndParseData';
 import {
   Banner,
   BannerBody,
@@ -16,36 +15,23 @@ import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
 import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
 import { ReportDetail } from './components/ReportDetail';
-import type { DocumentDataType } from './Types';
+import type { PublicationsResponse } from './Types';
 
 function useRecentReportData() {
   return useQuery({
-    queryKey: ['all-reports'],
+    queryKey: ['get-recent-report'],
     queryFn: async () => {
-      const data = (await fetchAndParseCSV('/data/data.csv')) as DocumentDataType[];
-      if (!data || data.length === 0) return [];
-      const formattedData = data.map((item, i) => {
-        return {
-          ...item,
-          'Region / Country': item['Region / Country']?.split(',') || [],
-          'DAC Recommendation': item['DAC Recommendation']?.split(',') || [],
-          'HDP Tags': item['HDP Tags']?.split(',') || [],
-          Language: item['Language']?.split(',') || [],
-          Affiliations: item['Affiliations']?.split(',') || [],
-          id: `doc-${i + 1}`,
-        };
-      });
-      return formattedData;
+      const response = await fetch(
+        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/publications/recent?limit=5',
+      );
+      const data = (await response.json()) as PublicationsResponse;
+      return data.items;
     },
   });
 }
 
 function App() {
   const { data, isLoading, isError } = useRecentReportData();
-
-  if (isLoading) return <Spinner size='lg' className='mx-auto my-20' />;
-
-  if (isError) return <>Error</>;
   return (
     <>
       <PageHeader
@@ -111,34 +97,40 @@ function App() {
                 <Link to='/all-reports'>View All Reports</Link>
               </Button>
             </GridItem>
-            {data?.slice(0, 5).map((report) => (
-              <GridItem
-                key={report.id}
-                noOfColSpan={{
-                  base: 1,
-                  md: 1,
-                  sm: 1,
-                }}
-              >
-                <Drawer direction='right'>
-                  <DrawerTrigger className='h-full'>
-                    <div className='h-full cursor-pointer bg-surface p-8 hover:bg-surface-hover'>
-                      <P size='lg' weight='bold'>
-                        {report.Title}
-                      </P>
-                      <P size='base' className='line-clamp-3'>
-                        {report.Abstract}
-                      </P>
-                    </div>
-                  </DrawerTrigger>
-                  <DrawerContent>
-                    <DrawerBody>
-                      <ReportDetail report={report} />
-                    </DrawerBody>
-                  </DrawerContent>
-                </Drawer>
-              </GridItem>
-            ))}
+            {isError ? (
+              'Error'
+            ) : isLoading || !data ? (
+              <Spinner size='lg' className='mx-auto my-20' />
+            ) : (
+              data?.map((report) => (
+                <GridItem
+                  key={report.id}
+                  noOfColSpan={{
+                    base: 1,
+                    md: 1,
+                    sm: 1,
+                  }}
+                >
+                  <Drawer direction='right'>
+                    <DrawerTrigger className='h-full w-full'>
+                      <div className='h-full w-full cursor-pointer bg-surface p-8 hover:bg-surface-hover'>
+                        <P size='lg' weight='bold'>
+                          {report.title}
+                        </P>
+                        <P size='base' className='line-clamp-3'>
+                          {report.abstract_md || 'No abstract available'}
+                        </P>
+                      </div>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DrawerBody>
+                        <ReportDetail report={report} />
+                      </DrawerBody>
+                    </DrawerContent>
+                  </Drawer>
+                </GridItem>
+              ))
+            )}
           </Grid>
         )}
       </Container>

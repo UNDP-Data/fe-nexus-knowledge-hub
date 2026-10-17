@@ -5,6 +5,7 @@ import {
   Outlet,
   RouterProvider,
 } from '@tanstack/react-router';
+import { Toaster } from '@undp/design-system-react/Toaster';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -22,13 +23,14 @@ const rootRoute = createRootRoute({
   component: () => (
     <div className='flex min-h-screen flex-col gap-0'>
       <HeaderEl />
-      <main className='flex grow flex-col justify-center'>
-        <div className='flex flex-col justify-center'>
+      <main className='flex grow flex-col justify-start'>
+        <div className='flex flex-col justify-start'>
           <Outlet />
         </div>
       </main>
       <FooterEl />
       <ChatbotUI />
+      <Toaster />
     </div>
   ),
 });

@@ -1,7 +1,9 @@
+import { useMutation } from '@tanstack/react-query';
 import { Avatar, AvatarFallback } from '@undp/design-system-react/Avatar';
 import { Bubble, BubbleContent, BubbleGroup } from '@undp/design-system-react/Bubble';
 import { Button } from '@undp/design-system-react/Button';
 import { Input } from '@undp/design-system-react/Input';
+import { MarkdownRenderer } from '@undp/design-system-react/MarkdownRenderer';
 import { Message, MessageContent, MessageGroup } from '@undp/design-system-react/Message';
 import {
   MessageScroller,
@@ -17,12 +19,103 @@ import { useState } from 'react';
 interface ConversationDataType {
   message: string;
   sender: 'user' | 'bot';
+  isError?: boolean;
+}
+
+interface CitationDataType {
+  banner_url: string;
+  citation_number: number;
+  document_id: string;
+  document_url: string;
+  document_urls: string[];
+  title: string;
+  url: string;
+}
+
+interface ChatResponse {
+  answer: string;
+  citations: CitationDataType[];
+}
+
+function ChatMessage({ item }: { item: ConversationDataType }) {
+  return (
+    <MessageGroup>
+      <Message align={item.sender === 'user' ? 'end' : 'start'}>
+        <Avatar>
+          {item.sender === 'user' ? (
+            <AvatarFallback border={false} color='secondary'>
+              <User size={20} />
+            </AvatarFallback>
+          ) : (
+            <AvatarFallback border={false} color='primary'>
+              <Bot size={20} />
+            </AvatarFallback>
+          )}
+        </Avatar>
+        <MessageContent className='w-full'>
+          <BubbleGroup className='w-full'>
+            <Bubble color={item.sender === 'user' ? 'secondary' : 'surface'}>
+              <BubbleContent className={item.isError ? 'text-error' : undefined}>
+                <MarkdownRenderer
+                  text={item.message || ''}
+                  size='base'
+                  classNames={{
+                    p: 'mb-0!',
+                  }}
+                />
+              </BubbleContent>
+            </Bubble>
+          </BubbleGroup>
+        </MessageContent>
+      </Message>
+    </MessageGroup>
+  );
 }
 
 export function ChatbotUI() {
   const [open, setOpen] = useState<boolean>(false);
   const [inputString, setInputString] = useState('');
   const [conversation, setConversation] = useState<ConversationDataType[]>([]);
+
+  const sendMessage = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch(
+        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/chat',
+        {
+          method: 'POST',
+          headers: {
+            Accept: '*/*',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status}): ${await response.text()}`);
+      }
+      return (await response.json()) as ChatResponse;
+    },
+    onMutate: (message) => {
+      setConversation((prev) => [...prev, { message, sender: 'user' }]);
+      setInputString('');
+    },
+    onSuccess: (data) => {
+      setConversation((prev) => [...prev, { message: data.answer, sender: 'bot' }]);
+    },
+    onError: (error) => {
+      console.error('Chat request failed:', error);
+      setConversation((prev) => [
+        ...prev,
+        { message: 'Sorry, something went wrong. Please try again.', sender: 'bot', isError: true },
+      ]);
+    },
+  });
+
+  const handleSend = () => {
+    const message = inputString.trim();
+    if (message === '' || sendMessage.isPending) return;
+    sendMessage.mutate(message);
+  };
   return (
     <div className='fixed right-8 bottom-8 z-5 flex flex-col items-end'>
       {open && (
@@ -31,7 +124,12 @@ export function ChatbotUI() {
             <P weight='bold' marginBottom='none' size='lg'>
               Chatbot
             </P>
-            <Button onClick={() => setOpen(false)} variant='icon' className='p-0'>
+            <Button
+              onClick={() => setOpen(false)}
+              variant='icon'
+              padding='none'
+              className='bg-transparent'
+            >
               <X size={24} />
             </Button>
           </div>
@@ -42,30 +140,14 @@ export function ChatbotUI() {
                   {conversation.map((item, idx) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: index is the unique identifier
                     <MessageScrollerItem key={idx}>
-                      <MessageGroup>
-                        <Message align={item.sender === 'user' ? 'end' : 'start'}>
-                          <Avatar>
-                            {item.sender === 'user' ? (
-                              <AvatarFallback border={false} color='secondary'>
-                                <User size={20} />
-                              </AvatarFallback>
-                            ) : (
-                              <AvatarFallback border={false} color='primary'>
-                                <Bot size={20} />
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <MessageContent className='w-full'>
-                            <BubbleGroup className='w-full'>
-                              <Bubble variant={item.sender === 'user' ? 'secondary' : 'surface'}>
-                                <BubbleContent>{item.message}</BubbleContent>
-                              </Bubble>
-                            </BubbleGroup>
-                          </MessageContent>
-                        </Message>
-                      </MessageGroup>
+                      <ChatMessage item={item} />
                     </MessageScrollerItem>
                   ))}
+                  {sendMessage.isPending && (
+                    <MessageScrollerItem>
+                      <ChatMessage item={{ message: 'Thinking…', sender: 'bot' }} />
+                    </MessageScrollerItem>
+                  )}
                 </MessageScrollerContent>
               </MessageScrollerViewport>
             </MessageScroller>
@@ -79,26 +161,24 @@ export function ChatbotUI() {
               onKeyUp={(e) => {
                 if (e.key === 'Enter') {
                   if (inputString.trim() === '') return;
-                  setConversation((prev) => [...prev, { message: inputString, sender: 'user' }]);
-                  setInputString('');
+                  handleSend();
                 }
               }}
             />
             <Button
               variant='icon'
-              arrow={false}
-              className='p-0'
-              disabled={inputString.trim() === ''}
+              endIcon='none'
+              className='bg-transparent'
+              padding='none'
+              disabled={inputString.trim() === '' || sendMessage.isPending}
               onClick={() => {
                 if (inputString.trim() === '') return;
-                setConversation((prev) => [...prev, { message: inputString, sender: 'user' }]);
-                setInputString('');
+                handleSend();
               }}
               onKeyUp={(e) => {
                 if (e.key === 'Enter') {
                   if (inputString.trim() === '') return;
-                  setConversation((prev) => [...prev, { message: inputString, sender: 'user' }]);
-                  setInputString('');
+                  handleSend();
                 }
               }}
             >

@@ -1,178 +1,179 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createLazyRoute } from '@tanstack/react-router';
+import { Button } from '@undp/design-system-react/Button';
 import { Container } from '@undp/design-system-react/Container';
-import { Input } from '@undp/design-system-react/Input';
-import { Label } from '@undp/design-system-react/Label';
+import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
-import { H2 } from '@undp/design-system-react/Typography';
+import { useToast } from '@undp/design-system-react/ToasterHooks';
+import { H2, P } from '@undp/design-system-react/Typography';
 import { useState } from 'react';
-
-export function AllReportsPage() {
-  const [title, setTitle] = useState<string | undefined>();
-  const [abstract, setAbstract] = useState<string | undefined>();
-  const [documentType, setDocumentType] = useState<string | undefined>();
-  const [regionOrCountry, setRegionOrCountry] = useState<string | undefined>();
-  const [hdpTags, setHdpTags] = useState<string | undefined>();
-  const [thematicTags, setThematicTags] = useState<string | undefined>();
-  const [dacRecommendation, setDacRecommendation] = useState<string | undefined>();
-  const [affiliations, setAffiliations] = useState<string | undefined>();
-  const [authors, setAuthors] = useState<string | undefined>();
-  const [language, setLanguage] = useState<string | undefined>();
-  const [link, setLink] = useState<string | undefined>();
-  const [banner, setBanner] = useState<string | undefined>();
-  const [pdf, setPdf] = useState<string | undefined>();
+import { ReportFilesForm, ReportMetadataForm } from '@/components/ReportEditForm';
+export function AddReport() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [title, setTitle] = useState<string>('');
+  const [abstract, setAbstract] = useState<string>('');
+  const [documentType, setDocumentType] = useState<string>('');
+  const [regionOrCountry, setRegionOrCountry] = useState<string[]>([]);
+  const [hdpTags, setHdpTags] = useState<string[]>([]);
+  const [thematicTags, setThematicTags] = useState<string[]>([]);
+  const [dacRecommendation, setDacRecommendation] = useState<string[]>([]);
+  const [affiliations, setAffiliations] = useState<string[]>([]);
+  const [publicationYear, setPublicationYear] = useState<number>(2026);
+  const [authors, setAuthors] = useState<string>('');
+  const [language, setLanguage] = useState<{ code: string; name: string }[]>([]);
+  const [link, setLink] = useState<string>('');
+  const [banner, setBanner] = useState<File | undefined>(undefined);
+  const [documents, setDocuments] = useState<File[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const resetForm = () => {
+    setTitle('');
+    setAbstract('');
+    setDocumentType('');
+    setRegionOrCountry([]);
+    setHdpTags([]);
+    setThematicTags([]);
+    setDacRecommendation([]);
+    setAffiliations([]);
+    setPublicationYear(2026);
+    setAuthors('');
+    setLanguage([]);
+    setLink('');
+    setBanner(undefined);
+    setDocuments([]);
+    setAttachments([]);
+  };
+  const createReport = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData();
+      const metadata = {
+        title: title,
+        abstract_md: abstract,
+        document_type: documentType,
+        locations: regionOrCountry,
+        hdp_tags: hdpTags,
+        thematic_tags: thematicTags,
+        dac_recommendations: dacRecommendation,
+        affiliations,
+        authors,
+        publication_year: publicationYear,
+        languages: language,
+        external_url: link,
+        rating: null,
+      };
+      formData.append('metadata', JSON.stringify(metadata));
+      if (banner) formData.append('banner', banner);
+      documents.forEach((file) => {
+        formData.append('documents', file);
+      });
+      attachments.forEach((file) => {
+        formData.append('attachments', file);
+      });
+      const response = await fetch(
+        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/publications',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+          },
+          body: formData,
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status}): ${await response.text()}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-all-reports', 'admin'] });
+      resetForm();
+      toast({
+        title: 'Success',
+        variant: 'success',
+        description: 'Report submitted successfully.',
+        duration: 3000,
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to create publication:', error);
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description: 'Failed to submit report. Try again.',
+        duration: 3000,
+      });
+    },
+  });
   return (
-    <Container width='base' className='m-auto px-8'>
-      <div className='flex items-center justify-between gap-8'>
-        <H2>Add a New Report</H2>
-      </div>
-      <Spacer size='2xl' />
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='title'>Title</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder='Enter the title of the report'
-          rounded='base'
-          variant='light'
-          value={title}
+    <div className='w-full'>
+      <Container width='base' className='m-auto flex flex-col px-8! pt-16! pb-16!'>
+        <div className='flex flex-col items-start justify-start gap-4'>
+          <H2 marginBottom='none'>Add a New Report</H2>
+          <P size='base' marginBottom='none' className='text-content-secondary'>
+            Fields marked * are required.
+          </P>
+        </div>
+        <Spacer size='3xl' />
+        <ReportMetadataForm
+          title={title}
+          setTitle={setTitle}
+          hdpTags={hdpTags}
+          setHdpTags={setHdpTags}
+          abstract={abstract}
+          setAbstract={setAbstract}
+          link={link}
+          setLink={setLink}
+          documentType={documentType}
+          setDocumentType={setDocumentType}
+          publicationYear={publicationYear}
+          setPublicationYear={setPublicationYear}
+          language={language}
+          setLanguage={setLanguage}
+          dacRecommendation={dacRecommendation}
+          setDacRecommendation={setDacRecommendation}
+          affiliations={affiliations}
+          setAffiliations={setAffiliations}
+          authors={authors}
+          setAuthors={setAuthors}
+          regionOrCountry={regionOrCountry}
+          setRegionOrCountry={setRegionOrCountry}
+          thematicTags={thematicTags}
+          setThematicTags={setThematicTags}
         />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='abstract'>Abstract</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setAbstract(e.target.value)}
-          placeholder='Enter the abstract of the report'
-          rounded='base'
-          variant='light'
-          value={abstract}
+        <Separator color='surface-md' />
+        <Spacer size='3xl' />
+        <ReportFilesForm
+          bannerDocument={banner}
+          primaryDocuments={documents}
+          secondaryDocuments={attachments}
+          setBannerDocument={setBanner}
+          setPrimaryDocuments={setDocuments}
+          setSecondaryDocuments={setAttachments}
         />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='documentType'>Document Type</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setDocumentType(e.target.value)}
-          placeholder='Enter the document type of the report'
-          rounded='base'
-          variant='light'
-          value={documentType}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='regionOrCountry'>Region or Country</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setRegionOrCountry(e.target.value)}
-          placeholder='Enter the region or country of the report'
-          rounded='base'
-          variant='light'
-          value={regionOrCountry}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='hdpTags'>HDP Tags</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setHdpTags(e.target.value)}
-          placeholder='Enter the HDP tags of the report'
-          rounded='base'
-          variant='light'
-          value={hdpTags}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='thematicTags'>Thematic Tags</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setThematicTags(e.target.value)}
-          placeholder='Enter the thematic tags of the report'
-          rounded='base'
-          variant='light'
-          value={thematicTags}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='dacRecommendation'>DAC Recommendation</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setDacRecommendation(e.target.value)}
-          placeholder='Enter the DAC recommendation of the report'
-          rounded='base'
-          variant='light'
-          value={dacRecommendation}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='affiliations'>Affiliations</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setAffiliations(e.target.value)}
-          placeholder='Enter the affiliations of the report'
-          rounded='base'
-          variant='light'
-          value={affiliations}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='authors'>Authors</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setAuthors(e.target.value)}
-          placeholder='Enter the authors of the report'
-          rounded='base'
-          variant='light'
-          value={authors}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='language'>Language</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setLanguage(e.target.value)}
-          placeholder='Enter the language of the report'
-          rounded='base'
-          variant='light'
-          value={language}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='link'>Link</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setLink(e.target.value)}
-          placeholder='Enter the link of the report'
-          rounded='base'
-          variant='light'
-          value={link}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='banner'>Banner</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setBanner(e.target.value)}
-          placeholder='Enter the banner of the report'
-          rounded='base'
-          variant='light'
-          value={banner}
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <Label htmlFor='pdf'>PDF</Label>
-        <Input
-          inputSize='base'
-          onChange={(e) => setPdf(e.target.value)}
-          placeholder='Enter the PDF of the report'
-          rounded='base'
-          variant='light'
-          value={pdf}
-        />
-      </div>
-    </Container>
+        <Spacer size='3xl' />
+        <div>
+          <Button
+            color='primary'
+            onClick={() => createReport.mutate()}
+            disabled={
+              createReport.isPending ||
+              !title ||
+              !documentType ||
+              !authors ||
+              !publicationYear ||
+              language.length === 0 ||
+              !banner ||
+              documents.length === 0
+            }
+          >
+            {createReport.isPending ? 'Saving...' : 'Submit'}
+          </Button>
+        </div>
+      </Container>
+    </div>
   );
 }
 
-export const Route = createLazyRoute('/query-demo')({
-  component: AllReportsPage,
+export const Route = createLazyRoute('/add-report')({
+  component: AddReport,
 });
