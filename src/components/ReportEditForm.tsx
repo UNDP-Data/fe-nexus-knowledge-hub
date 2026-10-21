@@ -145,6 +145,8 @@ export function ReportMetadataForm({
             placeholder='Enter the link of the report'
             rounded='base'
             variant='light'
+            maxLength={2000}
+            pattern='https?://.+'
             value={link}
           />
         </div>

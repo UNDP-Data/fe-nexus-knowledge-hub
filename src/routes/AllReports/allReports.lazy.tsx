@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { createLazyRoute } from '@tanstack/react-router';
+import { createLazyRoute, getRouteApi } from '@tanstack/react-router';
 import { Badge } from '@undp/design-system-react/Badge';
 import { Button } from '@undp/design-system-react/Button';
 import {
@@ -62,6 +62,8 @@ function useTaxonomies() {
     },
   });
 }
+const routeApi = getRouteApi('/all-reports');
+
 export function AllReportsPage() {
   const isUserAdmin = isAdmin();
   const key = sessionStorage.getItem(SESSION_STORAGE_NAME);
@@ -71,6 +73,14 @@ export function AllReportsPage() {
     isLoading: taxonomiesLoading,
     isError: taxonomiesError,
   } = useTaxonomies();
+
+  const { reportId } = routeApi.useSearch();
+  const navigate = routeApi.useNavigate();
+  const setReportId = (id?: string) =>
+    navigate({
+      search: () => ({ reportId: id }),
+      resetScroll: false,
+    });
   const [documentTypes, setDocumentTypes] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>(['approved', 'pending']);
   const [searchString, setSearchString] = useState('');
@@ -381,7 +391,11 @@ export function AllReportsPage() {
                   sm: 1,
                 }}
               >
-                <Drawer direction='right'>
+                <Drawer
+                  direction='right'
+                  open={reportId === report.id}
+                  onOpenChange={(open) => setReportId(open ? report.id : undefined)}
+                >
                   <DrawerTrigger className='h-full w-full'>
                     <Card
                       backgroundColor='background-soft'

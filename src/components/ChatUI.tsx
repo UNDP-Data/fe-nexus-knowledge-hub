@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback } from '@undp/design-system-react/Avatar';
 import { Bubble, BubbleContent, BubbleGroup } from '@undp/design-system-react/Bubble';
 import { Button } from '@undp/design-system-react/Button';
@@ -19,6 +20,15 @@ import { useState } from 'react';
 interface ConversationDataType {
   message: string;
   sender: 'user' | 'bot';
+  citations?: {
+    citation_number: number;
+    document_id: string;
+    title: string;
+    url: string;
+    document_url: string;
+    document_urls: string[];
+    banner_url: string;
+  }[];
   isError?: boolean;
 }
 
@@ -63,6 +73,38 @@ function ChatMessage({ item }: { item: ConversationDataType }) {
                     p: 'mb-0!',
                   }}
                 />
+                {item.citations && (
+                  <>
+                    <div className='my-2 w-full border-black/20 border-t' />
+                    <P
+                      marginBottom='none'
+                      size='sm'
+                      weight='medium'
+                      className='mt-5 text-content-secondary'
+                    >
+                      Citations:
+                    </P>
+                  </>
+                )}
+                {item.citations?.map((citation) => (
+                  <div key={citation.citation_number} className='mt-4'>
+                    <P
+                      marginBottom='none'
+                      size='sm'
+                      className='text-content-secondary hover:underline'
+                    >
+                      [{citation.citation_number}]{' '}
+                      <Link
+                        to={`/all-reports`}
+                        target='_blank'
+                        search={{ reportId: citation.document_id }}
+                        className='text-content-secondary'
+                      >
+                        {citation.title}
+                      </Link>
+                    </P>
+                  </div>
+                ))}
               </BubbleContent>
             </Bubble>
           </BubbleGroup>
@@ -75,10 +117,28 @@ function ChatMessage({ item }: { item: ConversationDataType }) {
 export function ChatbotUI() {
   const [open, setOpen] = useState<boolean>(false);
   const [inputString, setInputString] = useState('');
-  const [conversation, setConversation] = useState<ConversationDataType[]>([]);
+  const [conversation, setConversation] = useState<ConversationDataType[]>([
+    {
+      message: 'Hello! I am the HDP Nexus AI assistant. How can I help you with HDP publications?',
+      sender: 'bot',
+    },
+  ]);
 
   const sendMessage = useMutation({
-    mutationFn: async (message: string) => {
+    mutationFn: async (_message: string) => {
+      const messages = [
+        ...conversation
+          .filter((item) => !item.isError)
+          .filter(
+            (item) =>
+              item.message !==
+              'Hello! I am the HDP Nexus AI assistant. How can I help you with HDP publications?',
+          )
+          .map((item) => ({
+            role: item.sender === 'user' ? 'user' : 'assistant',
+            content: item.message,
+          })),
+      ];
       const response = await fetch(
         'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/chat',
         {
@@ -87,7 +147,7 @@ export function ChatbotUI() {
             Accept: '*/*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ message }),
+          body: JSON.stringify({ messages }),
         },
       );
       if (!response.ok) {
@@ -100,7 +160,10 @@ export function ChatbotUI() {
       setInputString('');
     },
     onSuccess: (data) => {
-      setConversation((prev) => [...prev, { message: data.answer, sender: 'bot' }]);
+      setConversation((prev) => [
+        ...prev,
+        { message: data.answer, sender: 'bot', citations: data.citations },
+      ]);
     },
     onError: (error) => {
       console.error('Chat request failed:', error);
@@ -119,7 +182,7 @@ export function ChatbotUI() {
   return (
     <div className='fixed right-8 bottom-8 z-5 flex flex-col items-end'>
       {open && (
-        <div className='mb-4 w-150 rounded-lg border border-stroke bg-surface'>
+        <div className='mb-4 flex h-100 w-150 flex-col rounded-lg border border-stroke bg-surface lg:h-150'>
           <div className='flex items-center justify-between gap-8 border-stroke border-b p-4'>
             <P weight='bold' marginBottom='none' size='lg'>
               Chatbot
@@ -134,7 +197,7 @@ export function ChatbotUI() {
             </Button>
           </div>
           <MessageScrollerProvider>
-            <MessageScroller className='min-h-120 w-full bg-background'>
+            <MessageScroller className='w-full bg-background'>
               <MessageScrollerViewport>
                 <MessageScrollerContent className='p-4'>
                   {conversation.map((item, idx) => (
