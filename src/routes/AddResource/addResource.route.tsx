@@ -1,9 +1,9 @@
 import type { AnyRootRoute } from '@tanstack/react-router';
 import { createRoute } from '@tanstack/react-router';
 
-export default function createAllReportsRoute(parentRoute: AnyRootRoute) {
+export default function createAddReportRoute(parentRoute: AnyRootRoute) {
   return createRoute({
-    path: '/all-reports',
+    path: '/add-resource',
     getParentRoute: () => parentRoute,
-  }).lazy(() => import('./allReports.lazy').then((d) => d.Route));
+  }).lazy(() => import('./addResource.lazy').then((d) => d.Route));
 }

@@ -12,12 +12,13 @@ import App from './App';
 import FooterEl from './components/Footer';
 import HeaderEl from './components/Header';
 import * as TanStackQueryProvider from './integration/tanstack-query';
-import createAllReportsRoute from './routes/AllReports/allReports.route';
+import createAllReportsRoute from './routes/AllResources/allResources.route';
 
 import './styles/fonts.css';
 import './styles/style.css';
 import { ChatbotUI } from './components/ChatUI';
-import createAddReportRoute from './routes/AddReport/addReport.route';
+import createAddReportRoute from './routes/AddResource/addResource.route';
+import createLoginRoute from './routes/Login/login.route';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -45,6 +46,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   createAllReportsRoute(rootRoute),
   createAddReportRoute(rootRoute),
+  createLoginRoute(rootRoute),
 ]);
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();

@@ -52,3 +52,6 @@ export const STATUSES = [
     label: 'Archived',
   },
 ];
+
+export const API_BASE =
+  'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1';

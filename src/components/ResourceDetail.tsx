@@ -11,10 +11,13 @@ import { toast } from '@undp/design-system-react/ToasterHooks';
 import { H2, H4, P } from '@undp/design-system-react/Typography';
 import { ArrowLeft, Edit, File, FileText, Image } from 'lucide-react';
 import { useState } from 'react';
-import { DAC_COLORS, HDP_TAG_COLORS, SESSION_STORAGE_NAME } from '@/constants';
+import { API_BASE, DAC_COLORS, HDP_TAG_COLORS, SESSION_STORAGE_NAME } from '@/constants';
+import { useAppForm } from '@/lib/form';
 import type { Publication } from '@/Types';
 import { isAdmin } from '@/utils/isAdmin';
-import { ReportMetadataForm } from './ReportEditForm';
+import { type ReportFormValues, ReportMetadataForm, toReportPayload } from './ResourceFormSections';
+
+type ReportPayload = ReturnType<typeof toReportPayload>;
 
 export function ReportDetail({ report }: { report: Publication }) {
   const queryClient = useQueryClient();
@@ -40,17 +43,14 @@ export function ReportDetail({ report }: { report: Publication }) {
       formData.append('role', documentType);
       formData.append('position', '1');
       formData.append('file', documents[0]);
-      const response = await fetch(
-        `https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/admin/publications/${report.id}/assets`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: '*/*',
-            'X-API-Key': password,
-          },
-          body: formData,
+      const response = await fetch(`${API_BASE}/admin/publications/${report.id}/assets`, {
+        method: 'POST',
+        headers: {
+          Accept: '*/*',
+          'X-API-Key': password,
         },
-      );
+        body: formData,
+      });
       if (!response.ok) {
         throw new Error(
           `Uploading "${documents[0].name}" failed (${response.status}): ${await response.text()}`,
@@ -59,7 +59,7 @@ export function ReportDetail({ report }: { report: Publication }) {
       return response.status !== 204 ? await response.json() : null;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['get-all-reports'] });
+      await queryClient.invalidateQueries({ queryKey: ['get-all-resources'] });
       toast({
         title: 'Success',
         variant: 'success',
@@ -465,59 +465,42 @@ export function EditReport({
 }) {
   const isUserAdmin = isAdmin();
   const queryClient = useQueryClient();
-  const [title, setTitle] = useState(report.title);
-  const [abstract, setAbstract] = useState(report.abstract_md || '');
-  const [publicationYear, setPublicationYear] = useState(report.publication_year);
-  const [hdpTags, setHdpTags] = useState(report.hdp_tags || []);
-  const [dacRecommendation, setDacRecommendation] = useState(report.dac_recommendations || []);
-  const [regionOrCountry, setRegionOrCountry] = useState(
-    report.locations.map((el) => el.m49_code) || [],
-  );
-  const [thematicTags, setThematicTags] = useState(report.thematic_tags || []);
-  const [language, setLanguage] = useState(report.languages || []);
-  const [authors, setAuthors] = useState(report.authors || '');
-  const [link, setLink] = useState(report.external_url || '');
-  const [documentType, setDocumentType] = useState(report.document_type || '');
-  const [status, setStatus] = useState(report.status);
-  const [affiliations, setAffiliations] = useState(report.affiliations || []);
+
   const updateReport = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (values: ReportPayload) => {
       const password = sessionStorage.getItem(SESSION_STORAGE_NAME) || '';
       const metadata = {
-        title: title,
-        abstract_md: abstract,
-        document_type: documentType,
-        locations: regionOrCountry,
-        hdp_tags: hdpTags,
-        thematic_tags: thematicTags,
-        dac_recommendations: dacRecommendation,
-        affiliations: affiliations,
-        authors: authors,
-        publication_year: publicationYear,
-        languages: language,
-        external_url: link,
-        status: status,
+        title: values.title,
+        abstract_md: values.abstract,
+        document_type: values.documentType,
+        locations: values.regionOrCountry,
+        hdp_tags: values.hdpTags,
+        thematic_tags: values.thematicTags,
+        dac_recommendations: values.dacRecommendation,
+        affiliations: values.affiliations || [],
+        authors: values.authors,
+        publication_year: values.publicationYear,
+        languages: values.language,
+        external_url: values.link,
+        status: values.status,
         rating: null,
       };
-      const response = await fetch(
-        `https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/admin/publications/${report.id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            Accept: '*/*',
-            'Content-Type': 'application/json',
-            'X-API-Key': password,
-          },
-          body: JSON.stringify(metadata),
+      const response = await fetch(`${API_BASE}/admin/publications/${report.id}`, {
+        method: 'PATCH',
+        headers: {
+          Accept: '*/*',
+          'Content-Type': 'application/json',
+          'X-API-Key': password,
         },
-      );
+        body: JSON.stringify(metadata),
+      });
       if (!response.ok) {
         throw new Error(`Request failed (${response.status}): ${await response.text()}`);
       }
       return response.status !== 204 ? await response.json() : null;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['get-all-reports'] });
+      await queryClient.invalidateQueries({ queryKey: ['get-all-resources'] });
       toast({
         title: 'Success',
         variant: 'success',
@@ -536,55 +519,50 @@ export function EditReport({
       });
     },
   });
+
+  const form = useAppForm({
+    defaultValues: {
+      title: report.title,
+      abstract: report.abstract_md || '',
+      publicationYear: report.publication_year,
+      hdpTags: report.hdp_tags || [],
+      dacRecommendation: report.dac_recommendations || [],
+      regionOrCountry: report.locations?.map((el) => el.m49_code) || [],
+      thematicTags: report.thematic_tags || [],
+      language: report.languages || [],
+      authors: report.authors || '',
+      link: report.external_url || '',
+      documentType: report.document_type || '',
+      status: report.status,
+      affiliations: report.affiliations?.length > 0 ? report.affiliations.join(', ') : '',
+    } as ReportFormValues,
+    onSubmit: async ({ value }) => {
+      // onError above already shows the toast, so swallow the rejection here
+      await updateReport.mutateAsync(toReportPayload(value)).catch(() => {});
+    },
+  });
+
   if (!isUserAdmin) {
     return <div>You are not authorized to edit this report.</div>;
   }
+
   return (
-    <>
-      <ReportMetadataForm
-        title={title}
-        setTitle={setTitle}
-        hdpTags={hdpTags}
-        setHdpTags={setHdpTags}
-        abstract={abstract}
-        setAbstract={setAbstract}
-        link={link}
-        setLink={setLink}
-        documentType={documentType}
-        setDocumentType={setDocumentType}
-        publicationYear={publicationYear}
-        setPublicationYear={setPublicationYear}
-        language={language}
-        setLanguage={setLanguage}
-        dacRecommendation={dacRecommendation}
-        setDacRecommendation={setDacRecommendation}
-        affiliations={affiliations}
-        setAffiliations={setAffiliations}
-        authors={authors}
-        setAuthors={setAuthors}
-        status={status}
-        setStatus={setStatus}
-        regionOrCountry={regionOrCountry}
-        setRegionOrCountry={setRegionOrCountry}
-        thematicTags={thematicTags}
-        setThematicTags={setThematicTags}
-        cardBg='surface'
-      />
-      <Button
-        color='primary'
-        onClick={() => updateReport.mutate()}
-        disabled={
-          updateReport.isPending ||
-          !title ||
-          !documentType ||
-          !authors ||
-          !publicationYear ||
-          language.length === 0
-        }
-      >
-        {updateReport.isPending ? 'Saving...' : 'Submit'}
-      </Button>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <ReportMetadataForm form={form} showStatus />
+      <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting, s.isDirty] as const}>
+        {([canSubmit, isSubmitting, isDirty]) => (
+          <Button type='submit' color='primary' disabled={!canSubmit || isSubmitting || !isDirty}>
+            {isSubmitting ? 'Saving...' : 'Submit'}
+          </Button>
+        )}
+      </form.Subscribe>
       <Spacer size='3xl' />
-    </>
+    </form>
   );
 }

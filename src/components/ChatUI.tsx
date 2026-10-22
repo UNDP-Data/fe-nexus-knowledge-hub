@@ -16,6 +16,7 @@ import {
 import { P } from '@undp/design-system-react/Typography';
 import { Bot, MessagesSquare, Send, User, X } from 'lucide-react';
 import { useState } from 'react';
+import { API_BASE } from '@/constants';
 
 interface ConversationDataType {
   message: string;
@@ -95,7 +96,7 @@ function ChatMessage({ item }: { item: ConversationDataType }) {
                     >
                       [{citation.citation_number}]{' '}
                       <Link
-                        to={`/all-reports`}
+                        to={`/all-resources`}
                         target='_blank'
                         search={{ reportId: citation.document_id }}
                         className='text-content-secondary'
@@ -139,17 +140,14 @@ export function ChatbotUI() {
             content: item.message,
           })),
       ];
-      const response = await fetch(
-        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/chat',
-        {
-          method: 'POST',
-          headers: {
-            Accept: '*/*',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ messages }),
+      const response = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: {
+          Accept: '*/*',
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ messages }),
+      });
       if (!response.ok) {
         throw new Error(`Request failed (${response.status}): ${await response.text()}`);
       }

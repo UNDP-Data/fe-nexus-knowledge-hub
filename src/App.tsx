@@ -14,16 +14,15 @@ import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHea
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
 import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
-import { ReportDetail } from './components/ReportDetail';
+import { ReportDetail } from './components/ResourceDetail';
+import { API_BASE } from './constants';
 import type { PublicationsResponse } from './Types';
 
 function useRecentReportData() {
   return useQuery({
     queryKey: ['get-recent-report'],
     queryFn: async () => {
-      const response = await fetch(
-        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/publications/recent?limit=5',
-      );
+      const response = await fetch(`${API_BASE}/publications/recent?limit=5`);
       const data = (await response.json()) as PublicationsResponse;
       return data.items;
     },
@@ -91,10 +90,10 @@ function App() {
                 sm: 1,
               }}
             >
-              <H3 marginBottom='none'>Recent Reports</H3>
+              <H3 marginBottom='none'>Recent Resources</H3>
               <Spacer size='2xl' />
               <Button variant='link' padding='none'>
-                <Link to='/all-reports'>View All Reports</Link>
+                <Link to='/all-resources'>View All Resources</Link>
               </Button>
             </GridItem>
             {isError ? (

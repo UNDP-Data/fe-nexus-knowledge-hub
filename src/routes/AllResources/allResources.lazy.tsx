@@ -21,29 +21,24 @@ import { Spinner } from '@undp/design-system-react/Spinner';
 import { H2, P } from '@undp/design-system-react/Typography';
 import { FileText } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { ReportDetail } from '@/components/ReportDetail';
-import { SESSION_STORAGE_NAME, STATUSES } from '@/constants';
+import { ReportDetail } from '@/components/ResourceDetail';
+import { API_BASE, SESSION_STORAGE_NAME, STATUSES } from '@/constants';
 import type { PublicationsResponse, Taxonomies } from '@/Types';
 import { isAdmin } from '@/utils/isAdmin';
 
 function useAllReportData(key?: string | null) {
   return useQuery({
-    queryKey: key ? ['get-all-reports', 'admin'] : ['get-all-reports'],
+    queryKey: key ? ['get-all-resources', 'admin'] : ['get-all-resources'],
     queryFn: async () => {
       const response = key
-        ? await fetch(
-            'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/admin/publications/all',
-            {
-              method: 'GET',
-              headers: {
-                Accept: '*/*',
-                'X-API-Key': key,
-              },
+        ? await fetch(`${API_BASE}/admin/publications/all`, {
+            method: 'GET',
+            headers: {
+              Accept: '*/*',
+              'X-API-Key': key,
             },
-          )
-        : await fetch(
-            `https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/publications/all`,
-          );
+          })
+        : await fetch(`${API_BASE}/publications/all`);
       const data = (await response.json()) as PublicationsResponse;
       return data.items;
     },
@@ -54,17 +49,15 @@ function useTaxonomies() {
   return useQuery({
     queryKey: ['get-taxonomies'],
     queryFn: async () => {
-      const response = await fetch(
-        'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1/references/taxonomies',
-      );
+      const response = await fetch(`${API_BASE}/references/taxonomies`);
       const data = (await response.json()) as Taxonomies;
       return data;
     },
   });
 }
-const routeApi = getRouteApi('/all-reports');
+const routeApi = getRouteApi('/all-resources');
 
-export function AllReportsPage() {
+export function AllResourcesPage() {
   const isUserAdmin = isAdmin();
   const key = sessionStorage.getItem(SESSION_STORAGE_NAME);
   const { data, isLoading, isError } = useAllReportData(isUserAdmin ? key : undefined);
@@ -150,9 +143,9 @@ export function AllReportsPage() {
   ]);
 
   return (
-    <Container width='full' className='m-auto items-start px-8! pt-16! pb-16!'>
+    <Container width='full' className='m-auto items-start px-8! pt-8! pb-16!'>
       <div className='flex items-center justify-between gap-8'>
-        <H2>All Reports</H2>
+        <H2>All Resources</H2>
         <Search
           inputSize='base'
           inputVariant='light'
@@ -413,7 +406,7 @@ export function AllReportsPage() {
                         />
                         <CardTitle>
                           <div>
-                            <div className='flex gap-2'>
+                            <div className='flex flex-wrap gap-2'>
                               <Badge
                                 size='lg'
                                 rounded='full'
@@ -484,6 +477,6 @@ export function AllReportsPage() {
   );
 }
 
-export const Route = createLazyRoute('/all-reports')({
-  component: AllReportsPage,
+export const Route = createLazyRoute('/all-resources')({
+  component: AllResourcesPage,
 });
