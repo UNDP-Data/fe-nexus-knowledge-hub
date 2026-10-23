@@ -22,6 +22,30 @@ export function FilterSkeleton({ noOfFIlter = 8 }: { noOfFIlter?: number }) {
 
 export function CardSkeleton() {
   return (
+    <GridItem noOfColSpan={{ base: 1, sm: 1, md: 1 }}>
+      <div className='flex h-full flex-col bg-background'>
+        <div className={`${pulse} aspect-video w-full rounded-none`} />
+        <div className='flex flex-1 flex-col gap-3 p-6'>
+          <div className='flex gap-2'>
+            <div className={`${pulse} h-7 w-28 rounded-full`} />
+            <div className={`${pulse} h-7 w-16 rounded-full`} />
+          </div>
+          <Spacer size='xs' />
+          <div className={`${pulse} h-5 w-full`} />
+          <div className={`${pulse} h-5 w-3/4`} />
+          <Spacer size='xs' />
+          <div className={`${pulse} h-4 w-full`} />
+          <div className={`${pulse} h-4 w-full`} />
+          <div className={`${pulse} h-4 w-2/3`} />
+          <div className={`${pulse} mt-auto h-4 w-20`} />
+        </div>
+      </div>
+    </GridItem>
+  );
+}
+
+export function CardGridSkeleton({ numberOfCards = 32 }: { numberOfCards?: number }) {
+  return (
     <div aria-busy='true' aria-live='polite'>
       <span className='sr-only'>Loading resources…</span>
       <Grid
@@ -33,27 +57,9 @@ export function CardSkeleton() {
           sm: 2,
         }}
       >
-        {Array.from({ length: 32 }).map((_, i) => (
+        {Array.from({ length: numberOfCards }).map((_, i) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: index is unique
-          <GridItem key={i} noOfColSpan={{ base: 1, sm: 1, md: 1 }}>
-            <div className='flex h-full flex-col bg-background'>
-              <div className={`${pulse} aspect-video w-full rounded-none`} />
-              <div className='flex flex-1 flex-col gap-3 p-6'>
-                <div className='flex gap-2'>
-                  <div className={`${pulse} h-7 w-28 rounded-full`} />
-                  <div className={`${pulse} h-7 w-16 rounded-full`} />
-                </div>
-                <Spacer size='xs' />
-                <div className={`${pulse} h-5 w-full`} />
-                <div className={`${pulse} h-5 w-3/4`} />
-                <Spacer size='xs' />
-                <div className={`${pulse} h-4 w-full`} />
-                <div className={`${pulse} h-4 w-full`} />
-                <div className={`${pulse} h-4 w-2/3`} />
-                <div className={`${pulse} mt-auto h-4 w-20`} />
-              </div>
-            </div>
-          </GridItem>
+          <CardSkeleton key={i} />
         ))}
       </Grid>
     </div>

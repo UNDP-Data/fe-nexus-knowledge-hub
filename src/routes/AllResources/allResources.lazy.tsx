@@ -10,7 +10,7 @@ import { H2, P } from '@undp/design-system-react/Typography';
 import { useMemo, useState } from 'react';
 import { ResourceCard } from '@/components/ResourceCard';
 import { ReportDetail } from '@/components/ResourceDetail';
-import { CardSkeleton, FilterSkeleton } from '@/components/Skeleton';
+import { CardGridSkeleton, FilterSkeleton } from '@/components/Skeleton';
 import { API_BASE, SESSION_STORAGE_NAME, STATUSES } from '@/constants';
 import type { PublicationsResponse, Taxonomies } from '@/Types';
 import { isAdmin } from '@/utils/isAdmin';
@@ -373,7 +373,7 @@ export function AllResourcesPage() {
           )}
           <Spacer size='2xl' />
           {dataLoading || !data ? (
-            <CardSkeleton />
+            <CardGridSkeleton />
           ) : (
             <Grid
               gap='32px'

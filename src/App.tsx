@@ -16,6 +16,7 @@ import { Spinner } from '@undp/design-system-react/Spinner';
 import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
 import { ResourceCard } from './components/ResourceCard';
 import { ReportDetail } from './components/ResourceDetail';
+import { CardSkeleton } from './components/Skeleton';
 import { API_BASE } from './constants';
 import type { PublicationsResponse } from './Types';
 
@@ -77,7 +78,7 @@ function App() {
           'Error'
         ) : (
           <Grid
-            gap='16px'
+            gap='32px'
             noOfCol={{
               base: 1,
               md: 3,
@@ -97,33 +98,34 @@ function App() {
                 <Link to='/all-resources'>View All Resources</Link>
               </Button>
             </GridItem>
-            {isError ? (
-              'Error'
-            ) : isLoading || !data ? (
-              <Spinner size='lg' className='mx-auto my-20' />
-            ) : (
-              data?.map((report) => (
-                <GridItem
-                  key={report.id}
-                  noOfColSpan={{
-                    base: 1,
-                    md: 1,
-                    sm: 1,
-                  }}
-                >
-                  <Drawer direction='right'>
-                    <DrawerTrigger className='h-full w-full'>
-                      <ResourceCard resource={report} />
-                    </DrawerTrigger>
-                    <DrawerContent>
-                      <DrawerBody>
-                        <ReportDetail report={report} />
-                      </DrawerBody>
-                    </DrawerContent>
-                  </Drawer>
-                </GridItem>
-              ))
-            )}
+            {isError
+              ? 'Error'
+              : isLoading || !data
+                ? Array.from({ length: 5 }).map((_, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: index is unique
+                    <CardSkeleton key={i} />
+                  ))
+                : data?.map((report) => (
+                    <GridItem
+                      key={report.id}
+                      noOfColSpan={{
+                        base: 1,
+                        md: 1,
+                        sm: 1,
+                      }}
+                    >
+                      <Drawer direction='right'>
+                        <DrawerTrigger className='h-full w-full'>
+                          <ResourceCard resource={report} />
+                        </DrawerTrigger>
+                        <DrawerContent>
+                          <DrawerBody>
+                            <ReportDetail report={report} />
+                          </DrawerBody>
+                        </DrawerContent>
+                      </Drawer>
+                    </GridItem>
+                  ))}
           </Grid>
         )}
       </Container>
