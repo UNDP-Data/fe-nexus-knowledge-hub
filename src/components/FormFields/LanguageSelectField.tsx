@@ -1,26 +1,32 @@
 import { DropdownSelect } from '@undp/design-system-react/DropdownSelect';
 import { useFieldContext } from '@/lib/form-context';
+import { FilterSkeleton } from '../Skeleton';
 import { ErrorText } from './ErrorText';
 
 export function LanguageSelectField({
   label,
   placeholder,
   options,
+  isLoading = false,
   isRequired = false,
 }: {
   label: string;
   placeholder?: string;
   isRequired?: boolean;
-  options: { label: string; value: string }[];
+  options?: { label: string; value: string }[];
+  isLoading?: boolean;
 }) {
   const field = useFieldContext<{ name: string; code: string }[]>();
+  if (isLoading || !options) {
+    return <FilterSkeleton noOfFIlter={1} />;
+  }
   const selected = options.filter((opt) =>
     (field.state.value ?? []).map((el) => el.code).includes(opt.value),
   );
   return (
     <label htmlFor={label.toLowerCase()}>
       {label}
-      {isRequired && <span className='text-accent-red-700'>*</span>}
+      {isRequired && <span className='text-error'>*</span>}
       <DropdownSelect
         id={label.toLowerCase()}
         color='primary'

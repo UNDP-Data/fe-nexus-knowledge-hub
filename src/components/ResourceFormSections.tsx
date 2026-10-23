@@ -4,7 +4,6 @@ import { cn } from '@undp/design-system-react/cn';
 import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
-import { Spinner } from '@undp/design-system-react/Spinner';
 import { H5 } from '@undp/design-system-react/Typography';
 import { API_BASE } from '@/constants';
 import { withForm } from '@/lib/form';
@@ -124,11 +123,9 @@ export const ReportMetadataForm = withForm({
     } = useLocations();
 
     if (taxonomiesError) return <>Error loading taxonomies</>;
-    if (taxonomiesLoading || !taxonomies) return <Spinner size='lg' className='mx-auto my-20' />;
-
     return (
       <>
-        <div className={cn('flex flex-col gap-6 rounded-md bg-background p-0')}>
+        <div className='flex flex-col gap-6'>
           <H5 weight='bold' marginBottom='none'>
             About the report
           </H5>
@@ -171,8 +168,9 @@ export const ReportMetadataForm = withForm({
                 {(field) => (
                   <field.SingleSelectField
                     isRequired
+                    isLoading={taxonomiesLoading || !taxonomies}
                     label='Document Type'
-                    options={taxonomies.document_types.map((item) => ({
+                    options={taxonomies?.document_types.map((item) => ({
                       label: item,
                       value: item,
                     }))}
@@ -199,8 +197,9 @@ export const ReportMetadataForm = withForm({
                 {(field) => (
                   <field.LanguageSelectField
                     isRequired
+                    isLoading={taxonomiesLoading || !taxonomies}
                     label='Language'
-                    options={taxonomies.languages.map((item) => ({
+                    options={taxonomies?.languages.map((item) => ({
                       label: item.name,
                       value: item.code,
                     }))}
@@ -273,7 +272,8 @@ export const ReportMetadataForm = withForm({
             {(field) => (
               <field.CheckboxGroupField
                 label='HDP Tags'
-                options={taxonomies.hdp_tags.map((item) => ({ label: item, value: item }))}
+                isLoading={taxonomiesLoading || !taxonomies}
+                options={taxonomies?.hdp_tags.map((item) => ({ label: item, value: item }))}
               />
             )}
           </form.AppField>
@@ -282,14 +282,13 @@ export const ReportMetadataForm = withForm({
             <GridItem noOfColSpan={1}>
               {locationsError ? (
                 <>Error loading locations</>
-              ) : locationsLoading || !locations ? (
-                <Spinner size='sm' className='mx-auto my-20' />
               ) : (
                 <form.AppField name='regionOrCountry'>
                   {(field) => (
                     <field.MultiSelectField
                       label='Countries or regions'
-                      options={locations.map((item) => ({
+                      isLoading={locationsLoading || !locations}
+                      options={locations?.map((item) => ({
                         label: item.name,
                         value: item.m49_code,
                       }))}
@@ -303,7 +302,8 @@ export const ReportMetadataForm = withForm({
                 {(field) => (
                   <field.MultiSelectField
                     label='Thematic tags'
-                    options={taxonomies.thematic_tags.map((item) => ({
+                    isLoading={taxonomiesLoading || !taxonomies}
+                    options={taxonomies?.thematic_tags.map((item) => ({
                       label: item,
                       value: item,
                     }))}
@@ -317,7 +317,8 @@ export const ReportMetadataForm = withForm({
             {(field) => (
               <field.MultiSelectField
                 label='DAC recommendations'
-                options={taxonomies.dac_recommendations.map((item) => ({
+                isLoading={taxonomiesLoading || !taxonomies}
+                options={taxonomies?.dac_recommendations.map((item) => ({
                   label: item,
                   value: item,
                 }))}
@@ -395,40 +396,3 @@ export const ReportFilesForm = withForm({
     );
   },
 });
-
-/* -------------------------------------------------------------------------- */
-/*                                Example usage                               */
-/* -------------------------------------------------------------------------- */
-//
-// import { useAppForm } from '@/lib/form';
-//
-// export function CreateReportPage() {
-//   const { data: taxonomies } = useTaxonomies();
-//   const form = useAppForm({
-//     ...reportFormOptions,
-//     onSubmit: async ({ value }) => {
-//       if (!taxonomies) return;
-//       const payload = toReportPayload(value, taxonomies);
-//       // await createReport(payload);
-//     },
-//   });
-//
-//   return (
-//     <form
-//       onSubmit={(e) => {
-//         e.preventDefault();
-//         form.handleSubmit();
-//       }}
-//     >
-//       <ReportMetadataForm form={form} showStatus />
-//       <ReportFilesForm form={form} />
-//       <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
-//         {([canSubmit, isSubmitting]) => (
-//           <button type='submit' disabled={!canSubmit || isSubmitting}>
-//             {isSubmitting ? 'Saving…' : 'Submit'}
-//           </button>
-//         )}
-//       </form.Subscribe>
-//     </form>
-//   );
-// }

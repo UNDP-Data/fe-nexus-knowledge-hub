@@ -15,7 +15,7 @@ export function TextAreaField({
   return (
     <label htmlFor={label.toLowerCase()}>
       {label}
-      {isRequired && <span className='text-accent-red-700'>*</span>}
+      {isRequired && <span className='text-error'>*</span>}
       <Textarea
         id={label.toLowerCase()}
         onChange={(e) => field.handleChange(e.target.value)}

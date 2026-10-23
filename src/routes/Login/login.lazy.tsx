@@ -63,7 +63,7 @@ export function LoginPage() {
             >
               Login
             </Button>
-            {isError && <P className='text-accent-red'>Incorrect password</P>}
+            {isError && <P className='text-error'>Incorrect password</P>}
           </>
         )}
       </div>

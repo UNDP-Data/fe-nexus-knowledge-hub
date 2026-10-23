@@ -15,7 +15,7 @@ export function TextField({
   return (
     <label htmlFor={label.toLowerCase()}>
       {label}
-      {isRequired && <span className='text-accent-red-700'>*</span>}
+      {isRequired && <span className='text-error'>*</span>}
       <Input
         id={label.toLowerCase()}
         inputSize='base'

@@ -361,8 +361,13 @@ export function ReportDetail({ report }: { report: Publication }) {
         </GridItem>
         <GridItem noOfColSpan={1}>
           {report.assets.find((el) => el.role === 'primary_document' && el.position === 1) && (
-            <div className='flex flex-col rounded-lg border border-stroke bg-surface p-6'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
+            <div className='flex flex-col'>
+              <P
+                className='text-content-secondary uppercase'
+                weight='bold'
+                size='base'
+                marginBottom='none'
+              >
                 Primary document
               </P>
               <Spacer size='lg' />
@@ -426,28 +431,38 @@ export function ReportDetail({ report }: { report: Publication }) {
             (el) =>
               !((el.role === 'primary_document' && el.position === 1) || el.role === 'banner'),
           ).length > 0 && (
-            <div className='flex flex-col rounded-lg border border-stroke bg-surface p-6'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-                Other documents
-              </P>
-              <Spacer size='lg' />
-              <div className='flex flex-col gap-2'>
-                {report.assets
-                  .filter((el) => el.role !== 'banner')
-                  .filter((el) => !(el.role === 'primary_document' && el.position === 1))
-                  .map((asset) => (
-                    <a
-                      key={asset.id}
-                      href={asset.url}
-                      className='w-full bg-surface'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      <P marginBottom='none'>{asset.original_filename}</P>
-                    </a>
-                  ))}
+            <>
+              <Spacer size='2xl' />
+              <Separator color='surface-md' />
+              <Spacer size='2xl' />
+              <div className='flex flex-col'>
+                <P
+                  className='text-content-secondary uppercase'
+                  weight='medium'
+                  size='base'
+                  marginBottom='none'
+                >
+                  Other documents
+                </P>
+                <Spacer size='lg' />
+                <div className='flex flex-col gap-2'>
+                  {report.assets
+                    .filter((el) => el.role !== 'banner')
+                    .filter((el) => !(el.role === 'primary_document' && el.position === 1))
+                    .map((asset) => (
+                      <a
+                        key={asset.id}
+                        href={asset.url}
+                        className='w-full bg-surface'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        <P marginBottom='none'>{asset.original_filename}</P>
+                      </a>
+                    ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </GridItem>
       </Grid>

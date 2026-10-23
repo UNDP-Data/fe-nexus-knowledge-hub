@@ -1,27 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { createLazyRoute, getRouteApi } from '@tanstack/react-router';
-import { Badge } from '@undp/design-system-react/Badge';
-import { Button } from '@undp/design-system-react/Button';
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardImage,
-  CardTag,
-  CardTitle,
-} from '@undp/design-system-react/Card';
 import { Container } from '@undp/design-system-react/Container';
 import { Drawer, DrawerBody, DrawerContent, DrawerTrigger } from '@undp/design-system-react/Drawer';
 import { DropdownSelect } from '@undp/design-system-react/DropdownSelect';
 import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { Search } from '@undp/design-system-react/Search';
 import { Spacer } from '@undp/design-system-react/Spacer';
-import { Spinner } from '@undp/design-system-react/Spinner';
 import { H2, P } from '@undp/design-system-react/Typography';
-import { FileText } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { ResourceCard } from '@/components/ResourceCard';
 import { ReportDetail } from '@/components/ResourceDetail';
+import { CardSkeleton, FilterSkeleton } from '@/components/Skeleton';
 import { API_BASE, SESSION_STORAGE_NAME, STATUSES } from '@/constants';
 import type { PublicationsResponse, Taxonomies } from '@/Types';
 import { isAdmin } from '@/utils/isAdmin';
@@ -55,12 +44,17 @@ function useTaxonomies() {
     },
   });
 }
+
 const routeApi = getRouteApi('/all-resources');
 
 export function AllResourcesPage() {
   const isUserAdmin = isAdmin();
   const key = sessionStorage.getItem(SESSION_STORAGE_NAME);
-  const { data, isLoading, isError } = useAllReportData(isUserAdmin ? key : undefined);
+  const {
+    data,
+    isLoading: dataLoading,
+    isError: dataError,
+  } = useAllReportData(isUserAdmin ? key : undefined);
   const {
     data: taxonomies,
     isLoading: taxonomiesLoading,
@@ -154,323 +148,269 @@ export function AllResourcesPage() {
           }}
           showSearchButton={false}
           rounded='base'
+          disabled={!dataLoading && !data}
         />
       </div>
       <Spacer size='2xl' />
-      {isError || taxonomiesError ? (
+      {dataError || taxonomiesError ? (
         <>Error</>
-      ) : isLoading || taxonomiesLoading || !data || !taxonomies ? (
-        <Spinner size='lg' className='mx-auto my-20' />
       ) : (
         <>
-          <div className='flex w-full flex-wrap items-center gap-4'>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by document type
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setDocumentTypes(d.map((item) => `${item.value}`));
-                }}
-                options={taxonomies.document_types.map((item) => ({
-                  label: item,
-                  value: item,
-                }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by region/country
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setRegionAndCountries(d.map((item) => `${item.value}`));
-                }}
-                options={[
-                  ...new Set(data?.flatMap((report) => report.locations.map((el) => el.name))),
-                ]
-                  .filter((item) => item && item.trim() !== '')
-                  .sort((a, b) => a.localeCompare(b))
-                  .map((item) => ({
-                    label: item,
-                    value: item,
-                  }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by HDP tags
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setHdpTags(d.map((item) => `${item.value}`));
-                }}
-                options={taxonomies.hdp_tags.map((item) => ({
-                  label: item,
-                  value: item,
-                }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by tags
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setThematicTags(d.map((item) => `${item.value}`));
-                }}
-                options={taxonomies.thematic_tags.map((item) => ({
-                  label: item,
-                  value: item,
-                }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by DAC recommendation
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setDacRecommendation(d.map((item) => `${item.value}`));
-                }}
-                options={taxonomies.dac_recommendations.map((item) => ({
-                  label: item,
-                  value: item,
-                }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by publication year
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setPublicationYear(d.map((item) => `${item.value}`));
-                }}
-                options={[...new Set(data?.map((report) => report.publication_year))]
-                  .filter((item) => item)
-                  .sort((a, b) => b - a)
-                  .map((item) => ({
-                    label: item,
-                    value: item,
-                  }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by language
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setLanguage(d.map((item) => `${item.value}`));
-                }}
-                options={taxonomies.languages.map((item) => ({
-                  label: item.name,
-                  value: item.code,
-                }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            <div className='min-w-50'>
-              <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                Filter by affiliations
-              </P>
-              <DropdownSelect
-                color='primary'
-                variant='light'
-                onChange={(d) => {
-                  setAffiliations(d.map((item) => `${item.value}`));
-                }}
-                options={[...new Set(data?.flatMap((report) => report.affiliations))]
-                  .filter((item) => item)
-                  .sort((a, b) => a.localeCompare(b))
-                  .map((item) => ({
-                    label: item,
-                    value: item,
-                  }))}
-                showCheck
-                size='sm'
-                isMulti
-                isClearable
-              />
-            </div>
-            {isUserAdmin && (
+          {taxonomiesLoading || !taxonomies ? (
+            <FilterSkeleton noOfFIlter={isUserAdmin ? 9 : 8} />
+          ) : (
+            <div className='flex w-full flex-wrap items-center gap-4'>
               <div className='min-w-50'>
                 <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
-                  Filter by status
+                  Filter by document type
                 </P>
                 <DropdownSelect
                   color='primary'
                   variant='light'
                   onChange={(d) => {
-                    setStatusFilter(d.map((item) => `${item.value}`));
+                    setDocumentTypes(d.map((item) => `${item.value}`));
                   }}
-                  defaultValue={[
-                    {
-                      value: 'pending',
-                      label: 'Pending',
-                    },
-                    {
-                      value: 'approved',
-                      label: 'Approved',
-                    },
-                  ]}
-                  options={STATUSES}
+                  options={taxonomies.document_types.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
                   showCheck
                   size='sm'
+                  isDisabled={!dataLoading && !data}
                   isMulti
                   isClearable
                 />
               </div>
-            )}
-          </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by region/country
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setRegionAndCountries(d.map((item) => `${item.value}`));
+                  }}
+                  options={[
+                    ...new Set(data?.flatMap((report) => report.locations.map((el) => el.name))),
+                  ]
+                    .filter((item) => item && item.trim() !== '')
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((item) => ({
+                      label: item,
+                      value: item,
+                    }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by HDP tags
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setHdpTags(d.map((item) => `${item.value}`));
+                  }}
+                  options={taxonomies.hdp_tags.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by tags
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setThematicTags(d.map((item) => `${item.value}`));
+                  }}
+                  options={taxonomies.thematic_tags.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by DAC recommendation
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setDacRecommendation(d.map((item) => `${item.value}`));
+                  }}
+                  options={taxonomies.dac_recommendations.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by publication year
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setPublicationYear(d.map((item) => `${item.value}`));
+                  }}
+                  options={[...new Set(data?.map((report) => report.publication_year))]
+                    .filter((item) => item)
+                    .sort((a, b) => b - a)
+                    .map((item) => ({
+                      label: item,
+                      value: item,
+                    }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by language
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setLanguage(d.map((item) => `${item.value}`));
+                  }}
+                  options={taxonomies.languages.map((item) => ({
+                    label: item.name,
+                    value: item.code,
+                  }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              <div className='min-w-50'>
+                <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                  Filter by affiliations
+                </P>
+                <DropdownSelect
+                  color='primary'
+                  variant='light'
+                  onChange={(d) => {
+                    setAffiliations(d.map((item) => `${item.value}`));
+                  }}
+                  options={[...new Set(data?.flatMap((report) => report.affiliations))]
+                    .filter((item) => item)
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((item) => ({
+                      label: item,
+                      value: item,
+                    }))}
+                  showCheck
+                  size='sm'
+                  isMulti
+                  isDisabled={!dataLoading && !data}
+                  isClearable
+                />
+              </div>
+              {isUserAdmin && (
+                <div className='min-w-50'>
+                  <P size='sm' marginBottom='3xs' className='text-content-tertiary'>
+                    Filter by status
+                  </P>
+                  <DropdownSelect
+                    color='primary'
+                    variant='light'
+                    onChange={(d) => {
+                      setStatusFilter(d.map((item) => `${item.value}`));
+                    }}
+                    defaultValue={[
+                      {
+                        value: 'pending',
+                        label: 'Pending',
+                      },
+                      {
+                        value: 'approved',
+                        label: 'Approved',
+                      },
+                    ]}
+                    options={STATUSES}
+                    showCheck
+                    size='sm'
+                    isDisabled={!dataLoading && !data}
+                    isMulti
+                    isClearable
+                  />
+                </div>
+              )}
+            </div>
+          )}
           <Spacer size='2xl' />
-          <Grid
-            gap='32px'
-            noOfCol={{
-              base: 1,
-              md: 3,
-              lg: 4,
-              sm: 2,
-            }}
-          >
-            {filteredData?.map((report) => (
-              <GridItem
-                key={report.id}
-                noOfColSpan={{
-                  base: 1,
-                  md: 1,
-                  sm: 1,
-                }}
-              >
-                <Drawer
-                  direction='right'
-                  open={reportId === report.id}
-                  onOpenChange={(open) => setReportId(open ? report.id : undefined)}
+          {dataLoading || !data ? (
+            <CardSkeleton />
+          ) : (
+            <Grid
+              gap='32px'
+              noOfCol={{
+                base: 1,
+                md: 3,
+                xl: 4,
+                sm: 2,
+              }}
+            >
+              {filteredData?.map((report) => (
+                <GridItem
+                  key={report.id}
+                  noOfColSpan={{
+                    base: 1,
+                    md: 1,
+                    sm: 1,
+                  }}
                 >
-                  <DrawerTrigger className='h-full w-full'>
-                    <Card
-                      backgroundColor='background-soft'
-                      size='full'
-                      variant='with-image'
-                      className='h-full'
-                    >
-                      <CardHeader>
-                        <CardTag className='pb-4!'>{report.document_type}</CardTag>
-                        <CardImage
-                          src={
-                            report.assets?.find((el) => el.role === 'banner')?.url ||
-                            'https://plus.unsplash.com/premium_photo-1738857914575-3d3b2fb7064e?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                          }
-                        />
-                        <CardTitle>
-                          <div>
-                            <div className='flex flex-wrap gap-2'>
-                              <Badge
-                                size='lg'
-                                rounded='full'
-                                color='secondary'
-                                className='bg-secondary/20 px-4 py-1'
-                              >
-                                <div className='flex items-center gap-2 text-blue-700'>
-                                  <FileText size={16} />
-                                  {report.document_type}
-                                </div>
-                              </Badge>
-                              <Badge
-                                size='lg'
-                                rounded='full'
-                                color='surface-sm'
-                                className='px-4 py-1'
-                              >
-                                {report.publication_year}
-                              </Badge>
-                              {isUserAdmin && (
-                                <Badge
-                                  className='w-fit'
-                                  color={
-                                    report.status === 'approved'
-                                      ? 'success'
-                                      : report.status === 'rejected'
-                                        ? 'error'
-                                        : report.status === 'pending'
-                                          ? 'warning'
-                                          : 'background'
-                                  }
-                                >
-                                  {report.status.replace(/\b\w/g, (char) => char.toUpperCase())}
-                                </Badge>
-                              )}
-                            </div>
-                            <Spacer size='xl' />
-                            <P className='line-clamp-2' weight='bold' size='lg' marginBottom='none'>
-                              {report.title}
-                            </P>
-                          </div>
-                        </CardTitle>
-                        <CardDescription>
-                          <P className='line-clamp-3' size='base' marginBottom='none'>
-                            {report.abstract_md || 'No abstract available'}
-                          </P>
-                        </CardDescription>
-                      </CardHeader>
-                      <CardFooter>
-                        <Button padding='none' variant='link'>
-                          Read more
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </DrawerTrigger>
-                  <DrawerContent>
-                    <DrawerBody>
-                      <ReportDetail report={report} />
-                    </DrawerBody>
-                  </DrawerContent>
-                </Drawer>
-              </GridItem>
-            ))}
-          </Grid>
+                  <Drawer
+                    direction='right'
+                    open={reportId === report.id}
+                    onOpenChange={(open) => setReportId(open ? report.id : undefined)}
+                  >
+                    <DrawerTrigger className='h-full w-full'>
+                      <ResourceCard resource={report} isUserAdmin={isUserAdmin} />
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DrawerBody>
+                        <ReportDetail report={report} />
+                      </DrawerBody>
+                    </DrawerContent>
+                  </Drawer>
+                </GridItem>
+              ))}
+            </Grid>
+          )}
         </>
       )}
     </Container>

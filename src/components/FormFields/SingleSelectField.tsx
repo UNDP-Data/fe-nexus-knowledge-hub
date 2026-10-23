@@ -1,5 +1,6 @@
 import { DropdownSelect } from '@undp/design-system-react/DropdownSelect';
 import { useFieldContext } from '@/lib/form-context';
+import { FilterSkeleton } from '../Skeleton';
 import { ErrorText } from './ErrorText';
 
 export function SingleSelectField({
@@ -7,18 +8,23 @@ export function SingleSelectField({
   placeholder,
   options,
   isRequired = false,
+  isLoading = false,
 }: {
   label: string;
   placeholder?: string;
   isRequired?: boolean;
-  options: { label: string; value: string }[];
+  isLoading?: boolean;
+  options?: { label: string; value: string }[];
 }) {
   const field = useFieldContext<string>();
+  if (isLoading || !options) {
+    return <FilterSkeleton noOfFIlter={1} />;
+  }
   const selected = options.find((o) => o.value === field.state.value) ?? null;
   return (
     <label htmlFor={label.toLowerCase()}>
       {label}
-      {isRequired && <span className='text-accent-red-700'>*</span>}
+      {isRequired && <span className='text-error'>*</span>}
       <DropdownSelect
         id={label.toLowerCase()}
         color='primary'

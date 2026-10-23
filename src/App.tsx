@@ -14,6 +14,7 @@ import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHea
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
 import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
+import { ResourceCard } from './components/ResourceCard';
 import { ReportDetail } from './components/ResourceDetail';
 import { API_BASE } from './constants';
 import type { PublicationsResponse } from './Types';
@@ -112,14 +113,7 @@ function App() {
                 >
                   <Drawer direction='right'>
                     <DrawerTrigger className='h-full w-full'>
-                      <div className='h-full w-full cursor-pointer bg-surface p-8 hover:bg-surface-hover'>
-                        <P size='lg' weight='bold'>
-                          {report.title}
-                        </P>
-                        <P size='base' className='line-clamp-3'>
-                          {report.abstract_md || 'No abstract available'}
-                        </P>
-                      </div>
+                      <ResourceCard resource={report} />
                     </DrawerTrigger>
                     <DrawerContent>
                       <DrawerBody>

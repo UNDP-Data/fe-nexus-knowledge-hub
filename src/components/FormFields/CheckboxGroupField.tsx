@@ -1,21 +1,27 @@
 import { CheckboxGroup, CheckboxGroupItem } from '@undp/design-system-react/CheckboxGroup';
 import { useFieldContext } from '@/lib/form-context';
+import { FilterSkeleton } from '../Skeleton';
 import { ErrorText } from './ErrorText';
 
 export function CheckboxGroupField({
   label,
   options,
+  isLoading = false,
   isRequired = false,
 }: {
   label: string;
+  isLoading?: boolean;
+  options?: { label: string; value: string }[];
   isRequired?: boolean;
-  options: { label: string; value: string }[];
 }) {
   const field = useFieldContext<string[]>();
+  if (isLoading || !options) {
+    return <FilterSkeleton noOfFIlter={1} />;
+  }
   return (
     <label htmlFor={label.toLowerCase()}>
       {label}
-      {isRequired && <span className='text-accent-red-700'>*</span>}
+      {isRequired && <span className='text-error'>*</span>}
       <CheckboxGroup
         id={label.toLowerCase()}
         color='primary'
