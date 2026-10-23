@@ -1,6 +1,5 @@
 import { formOptions } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
-import { cn } from '@undp/design-system-react/cn';
 import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
@@ -226,7 +225,10 @@ export const ReportMetadataForm = withForm({
         <Separator color='surface-md' />
         <Spacer size='3xl' />
 
-        <div className={cn('flex flex-col gap-6 rounded-md bg-background p-0')}>
+        <div className='flex flex-col gap-6'>
+          <H5 weight='bold' marginBottom='none'>
+            Author and Affiliation
+          </H5>
           <Grid noOfCol={{ base: 1, lg: 2 }} gap='24px'>
             <GridItem noOfColSpan={1}>
               <form.AppField
@@ -263,7 +265,7 @@ export const ReportMetadataForm = withForm({
         <Separator color='surface-md' />
         <Spacer size='3xl' />
 
-        <div className={cn('flex flex-col gap-6 rounded-md bg-background p-0')}>
+        <div className='flex flex-col gap-6'>
           <H5 weight='bold' marginBottom='none'>
             Classifications
           </H5>
@@ -338,7 +340,7 @@ export const ReportFilesForm = withForm({
   render: function Render({ form }) {
     return (
       <>
-        <div className={cn('flex flex-col gap-6 rounded-md bg-background p-0')}>
+        <div className='flex flex-col gap-6'>
           <H5 weight='bold' marginBottom='none'>
             Files
           </H5>

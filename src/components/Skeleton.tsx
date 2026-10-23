@@ -52,9 +52,11 @@ export function CardGridSkeleton({ numberOfCards = 32 }: { numberOfCards?: numbe
         gap='32px'
         noOfCol={{
           base: 1,
-          md: 3,
-          xl: 4,
-          sm: 2,
+          md: 1,
+          lg: 2,
+          xl: 3,
+          '2xl': 4,
+          sm: 1,
         }}
       >
         {Array.from({ length: numberOfCards }).map((_, i) => (

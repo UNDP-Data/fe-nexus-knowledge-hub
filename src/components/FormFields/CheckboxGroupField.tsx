@@ -1,4 +1,6 @@
 import { CheckboxGroup, CheckboxGroupItem } from '@undp/design-system-react/CheckboxGroup';
+import { Spacer } from '@undp/design-system-react/Spacer';
+import { P } from '@undp/design-system-react/Typography';
 import { useFieldContext } from '@/lib/form-context';
 import { FilterSkeleton } from '../Skeleton';
 import { ErrorText } from './ErrorText';
@@ -20,8 +22,11 @@ export function CheckboxGroupField({
   }
   return (
     <label htmlFor={label.toLowerCase()}>
-      {label}
-      {isRequired && <span className='text-error'>*</span>}
+      <P marginBottom='none' size='sm'>
+        {label}
+        {isRequired && <span className='text-error'>*</span>}
+      </P>
+      <Spacer size='sm' />
       <CheckboxGroup
         id={label.toLowerCase()}
         color='primary'

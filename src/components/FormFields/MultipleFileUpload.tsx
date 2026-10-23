@@ -1,4 +1,6 @@
 import { FileUpload } from '@undp/design-system-react/FileUpload';
+import { Spacer } from '@undp/design-system-react/Spacer';
+import { P } from '@undp/design-system-react/Typography';
 import { FileIcon } from 'lucide-react';
 import { useFieldContext } from '@/lib/form-context';
 import { ErrorText } from './ErrorText';
@@ -17,8 +19,11 @@ export function MultipleFileUpload({
   const field = useFieldContext<File[]>();
   return (
     <label htmlFor={label.toLowerCase()}>
-      {label}
-      {isRequired && <span className='text-error'>*</span>}
+      <P marginBottom='none' size='sm'>
+        {label}
+        {isRequired && <span className='text-error'>*</span>}
+      </P>
+      <Spacer size='sm' />
       <FileUpload
         id={label.toLowerCase()}
         accept={acceptFiles ?? '*/*'}

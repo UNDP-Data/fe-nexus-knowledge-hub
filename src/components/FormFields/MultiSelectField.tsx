@@ -1,4 +1,6 @@
 import { DropdownSelect } from '@undp/design-system-react/DropdownSelect';
+import { Spacer } from '@undp/design-system-react/Spacer';
+import { P } from '@undp/design-system-react/Typography';
 import { useFieldContext } from '@/lib/form-context';
 import { FilterSkeleton } from '../Skeleton';
 import { ErrorText } from './ErrorText';
@@ -23,13 +25,15 @@ export function MultiSelectField({
   const selected = options.filter((opt) => (field.state.value ?? []).includes(opt.value));
   return (
     <label htmlFor={label.toLowerCase()}>
-      {label}
-      {isRequired && <span className='text-error'>*</span>}
+      <P marginBottom='none' size='sm'>
+        {label}
+        {isRequired && <span className='text-error'>*</span>}
+      </P>
+      <Spacer size='sm' />
       <DropdownSelect
         id={label.toLowerCase()}
         color='primary'
         placeholder={placeholder}
-        variant='light'
         onChange={(options) =>
           field.handleChange(
             // biome-ignore lint/suspicious/noExplicitAny: Need to fix in the library
