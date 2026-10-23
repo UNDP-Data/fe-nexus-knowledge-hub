@@ -181,7 +181,7 @@ export function AllResourcesPage() {
           }}
         >
           <GridItem noOfColSpan={1}>
-            <div className='sticky top-10 bg-surface-2xs p-6'>
+            <div className='undp-scrollbar sticky top-10 max-h-auto max-h-auto bg-surface-2xs p-4 md:max-h-[calc(100vh-5rem)]'>
               <div className='flex justify-between'>
                 <div className='flex gap-4'>
                   <H6 marginBottom='none' className='mt-1'>
@@ -228,11 +228,10 @@ export function AllResourcesPage() {
                   <div className='flex w-full flex-wrap items-center gap-4'>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by document type
+                        By document type
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setDocumentTypes(d.map((item) => `${item.value}`));
                         }}
@@ -241,7 +240,6 @@ export function AllResourcesPage() {
                           value: item,
                         }))}
                         showCheck
-                        size='sm'
                         isDisabled={!dataLoading && !data}
                         isMulti
                         isClearable
@@ -249,11 +247,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by region/country
+                        By region/country
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setRegionAndCountries(d.map((item) => `${item.value}`));
                         }}
@@ -269,7 +266,6 @@ export function AllResourcesPage() {
                             value: item,
                           }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -277,11 +273,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by HDP tags
+                        By HDP tags
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setHdpTags(d.map((item) => `${item.value}`));
                         }}
@@ -290,7 +285,6 @@ export function AllResourcesPage() {
                           value: item,
                         }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -298,11 +292,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by tags
+                        By tags
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setThematicTags(d.map((item) => `${item.value}`));
                         }}
@@ -311,7 +304,6 @@ export function AllResourcesPage() {
                           value: item,
                         }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -319,11 +311,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by DAC recommendation
+                        By DAC recommendation
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setDacRecommendation(d.map((item) => `${item.value}`));
                         }}
@@ -332,7 +323,6 @@ export function AllResourcesPage() {
                           value: item,
                         }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -340,11 +330,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by publication year
+                        By publication year
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setPublicationYear(d.map((item) => `${item.value}`));
                         }}
@@ -356,7 +345,6 @@ export function AllResourcesPage() {
                             value: item,
                           }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -364,11 +352,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by language
+                        By language
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setLanguage(d.map((item) => `${item.value}`));
                         }}
@@ -377,7 +364,6 @@ export function AllResourcesPage() {
                           value: item.code,
                         }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -385,11 +371,10 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        Filter by affiliations
+                        By affiliations
                       </P>
                       <DropdownSelect
                         color='primary'
-                        variant='light'
                         onChange={(d) => {
                           setAffiliations(d.map((item) => `${item.value}`));
                         }}
@@ -401,7 +386,6 @@ export function AllResourcesPage() {
                             value: item,
                           }))}
                         showCheck
-                        size='sm'
                         isMulti
                         isDisabled={!dataLoading && !data}
                         isClearable
@@ -410,11 +394,10 @@ export function AllResourcesPage() {
                     {isUserAdmin && (
                       <div className='w-full'>
                         <P size='sm' marginBottom='3xs'>
-                          Filter by status
+                          By status
                         </P>
                         <DropdownSelect
                           color='primary'
-                          variant='light'
                           onChange={(d) => {
                             setStatusFilter(d.map((item) => `${item.value}`));
                           }}
@@ -430,7 +413,6 @@ export function AllResourcesPage() {
                           ]}
                           options={STATUSES}
                           showCheck
-                          size='sm'
                           isDisabled={!dataLoading && !data}
                           isMulti
                           isClearable
