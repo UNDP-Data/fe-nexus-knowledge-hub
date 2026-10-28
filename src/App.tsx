@@ -13,7 +13,7 @@ import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHeader';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
-import { A, H1, H3, H4, P } from '@undp/design-system-react/Typography';
+import { A, H1, H3, H4, H6, P } from '@undp/design-system-react/Typography';
 import { ResourceCard } from './components/ResourceCard';
 import { ReportDetail } from './components/ResourceDetail';
 import { CardSkeleton } from './components/Skeleton';
@@ -131,6 +131,28 @@ function App() {
         )}
       </Container>
       <Spacer size='8xl' />
+      <div className='w-full bg-surface'>
+        <Spacer size='8xl' />
+        <Container width='lg' className='m-auto'>
+          <H6>Powered by</H6>
+          <Spacer size='xl' />
+          <div className='flex w-full flex-wrap items-center gap-x-12 gap-y-8'>
+            <img
+              alt='nexus academy logo'
+              src='/imgs/Logos/Nexus Academy Logo.png'
+              className='h-20'
+            />
+            <img alt='GIZ logo' src='/imgs/Logos/BMZ-Logo_en.svg' className='h-20' />
+            <img alt='AECID logo' src='/imgs/Logos/Logo_AECID_-_2025.png' className='h-20' />
+            <img
+              alt='Government of the Republic of Korea logo'
+              src='/imgs/Logos/Emblem_of_the_Government_of_the_Republic_of_Korea_(English).svg'
+              className='h-20'
+            />
+          </div>
+        </Container>
+        <Spacer size='8xl' />
+      </div>
     </>
   );
 }
