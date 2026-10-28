@@ -13,7 +13,7 @@ import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHeader';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
-import { H1, H3, H4, P } from '@undp/design-system-react/Typography';
+import { A, H1, H3, H4, P } from '@undp/design-system-react/Typography';
 import { ResourceCard } from './components/ResourceCard';
 import { ReportDetail } from './components/ResourceDetail';
 import { CardSkeleton } from './components/Skeleton';
@@ -42,10 +42,7 @@ function App() {
       >
         <PageHeaderContent className='w-full md:w-1/2'>
           <H1>Nexus Knowledge Hub</H1>
-          <H4>
-            A curated global repository of practical resources supporting operationalisation of the
-            HDP Nexus.
-          </H4>
+          <H4>The go-to library for people working across humanitarian, development and peace.</H4>
         </PageHeaderContent>
       </PageHeader>
       <Banner
@@ -57,15 +54,19 @@ function App() {
       >
         <BannerBody>
           <BannerBodySidebar>
-            <H3>What is it?</H3>
+            <H3>Our purpose</H3>
           </BannerBodySidebar>
           <BannerBodyContent>
             <P>
-              A curated global repository of practical resources supporting operationalisation of
-              the HDP Nexus. Featuring academic reports, case studies, institutional frameworks, and
-              operational guidance, the Nexus Knowledge Hub (currently in Beta version) strengthens
-              evidence-based learning and provides the Nexus Academy course participants with a
-              one-stop-shop of actionable knowledge and tools.
+              The Nexus Knowledge Hub brings together over 500 resources — reports, evaluations,
+              guidance, case studies, policy papers and peer-reviewed research — organised against
+              the OECD DAC Recommendation on the Humanitarian-Development-Peace (HDP) Nexus. Built
+              for practitioners, policymakers and researchers working in fragile and crisis-affected
+              contexts, it is designed by the{' '}
+              <A href='https://www.undp.org/crisis/academy/nexus' target='_blank'>
+                Nexus Academy
+              </A>{' '}
+              as a digital public good: openly accessible, continuously curated, and free to use.
             </P>
           </BannerBodyContent>
         </BannerBody>
@@ -92,7 +93,7 @@ function App() {
                 sm: 1,
               }}
             >
-              <H3 marginBottom='none'>Recent Resources</H3>
+              <H3 marginBottom='none'>Recent resources</H3>
               <Spacer size='2xl' />
               <Button variant='link' padding='none'>
                 <Link to='/all-resources'>View All Resources</Link>

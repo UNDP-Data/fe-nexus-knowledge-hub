@@ -120,7 +120,8 @@ export function ChatbotUI() {
   const [inputString, setInputString] = useState('');
   const [conversation, setConversation] = useState<ConversationDataType[]>([
     {
-      message: 'Hello! I am the HDP Nexus AI assistant. How can I help you with HDP publications?',
+      message:
+        'Hello! I’m the AI assistant for the Nexus Knowledge Hub. Ask me anything about the HDP Nexus, and I’ll draw on 500+ curated resources to help you find what you need.',
       sender: 'bot',
     },
   ]);
@@ -133,7 +134,7 @@ export function ChatbotUI() {
           .filter(
             (item) =>
               item.message !==
-              'Hello! I am the HDP Nexus AI assistant. How can I help you with HDP publications?',
+              'Hello! I’m the AI assistant for the Nexus Knowledge Hub. Ask me anything about the HDP Nexus, and I’ll draw on 500+ curated resources to help you find what you need.',
           )
           .map((item) => ({
             role: item.sender === 'user' ? 'user' : 'assistant',
@@ -183,7 +184,7 @@ export function ChatbotUI() {
         <div className='mb-4 flex h-100 w-150 flex-col rounded-lg border border-stroke bg-surface lg:h-150'>
           <div className='flex items-center justify-between gap-8 border-stroke border-b p-4'>
             <P weight='bold' marginBottom='none' size='lg'>
-              Chatbot
+              NexusChat
             </P>
             <Button
               onClick={() => setOpen(false)}

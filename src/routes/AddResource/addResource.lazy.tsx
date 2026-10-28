@@ -95,7 +95,7 @@ export function AddResource() {
     <div className='w-full'>
       <Container width='base' className='m-auto flex flex-col px-8! pt-8! pb-16!'>
         <div className='flex flex-col items-start justify-start gap-4'>
-          <H2 marginBottom='none'>Add a New Resource</H2>
+          <H2 marginBottom='none'>Add a new resource</H2>
           <P size='base' marginBottom='none' className='text-content-secondary'>
             Fields marked * are required.
           </P>

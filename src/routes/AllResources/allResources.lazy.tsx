@@ -153,7 +153,7 @@ export function AllResourcesPage() {
   return (
     <Container width='full' className='m-auto items-start px-8! pt-8! pb-16!'>
       <div className='flex items-center justify-between gap-8'>
-        <H2>All Resources</H2>
+        <H2>All resources</H2>
         <Search
           inputSize='base'
           inputVariant='light'

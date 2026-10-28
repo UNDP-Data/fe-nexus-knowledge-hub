@@ -126,7 +126,7 @@ export const ReportMetadataForm = withForm({
       <>
         <div className='flex flex-col gap-6'>
           <H5 weight='bold' marginBottom='none'>
-            About the report
+            About the resource
           </H5>
 
           <form.AppField name='title' validators={{ onChange: required('Title is required') }}>
@@ -134,27 +134,27 @@ export const ReportMetadataForm = withForm({
               <field.TextField
                 isRequired
                 label='Title'
-                placeholder='Enter the title of the report'
+                placeholder='Enter the title of the resource'
               />
             )}
           </form.AppField>
 
-          <form.AppField
-            name='abstract'
-            validators={{ onChange: required('Abstract is required') }}
-          >
+          <form.AppField name='abstract'>
             {(field) => (
               <field.TextAreaField
-                isRequired
                 label='Abstract'
-                placeholder='Enter the abstract of the report'
+                placeholder='Enter the abstract of the resource'
               />
             )}
           </form.AppField>
 
           <form.AppField name='link' validators={{ onChange: urlValidator }}>
             {(field) => (
-              <field.URLField label='Link' isRequired placeholder='Enter the link of the report' />
+              <field.URLField
+                label='Link'
+                isRequired
+                placeholder='Enter the link of the resource'
+              />
             )}
           </form.AppField>
 
@@ -183,7 +183,7 @@ export const ReportMetadataForm = withForm({
                   <field.NumberField
                     isRequired
                     label='Publication Year'
-                    placeholder='Enter the publication year of the report'
+                    placeholder='Enter the publication year of the resource'
                   />
                 )}
               </form.AppField>
@@ -239,7 +239,7 @@ export const ReportMetadataForm = withForm({
                   <field.TextField
                     isRequired
                     label='Authors'
-                    placeholder='Enter the authors of the report'
+                    placeholder='Enter the authors of the resource'
                   />
                 )}
               </form.AppField>
@@ -267,13 +267,13 @@ export const ReportMetadataForm = withForm({
 
         <div className='flex flex-col gap-6'>
           <H5 weight='bold' marginBottom='none'>
-            Classifications
+            Details
           </H5>
 
           <form.AppField name='hdpTags'>
             {(field) => (
               <field.CheckboxGroupField
-                label='HDP Tags'
+                label='HDP Nexus pillars'
                 isLoading={taxonomiesLoading || !taxonomies}
                 options={taxonomies?.hdp_tags.map((item) => ({ label: item, value: item }))}
               />
@@ -303,7 +303,7 @@ export const ReportMetadataForm = withForm({
               <form.AppField name='thematicTags'>
                 {(field) => (
                   <field.MultiSelectField
-                    label='Thematic tags'
+                    label='Thematic areas'
                     isLoading={taxonomiesLoading || !taxonomies}
                     options={taxonomies?.thematic_tags.map((item) => ({
                       label: item,
@@ -346,29 +346,21 @@ export const ReportFilesForm = withForm({
           </H5>
           <Grid noOfCol={{ base: 1, lg: 2 }} gap='24px'>
             <GridItem noOfColSpan={1}>
-              <form.AppField
-                name='primaryDocuments'
-                validators={{ onChange: required('Primary document is required') }}
-              >
+              <form.AppField name='primaryDocuments'>
                 {(field) => (
                   <field.PrimaryDocumentFileUpload
                     label='Primary document'
-                    isRequired
                     acceptFiles='.pdf,.docx,image/*'
-                    text='Upload the report here'
+                    text='Upload the resource here'
                   />
                 )}
               </form.AppField>
             </GridItem>
             <GridItem noOfColSpan={1}>
-              <form.AppField
-                name='bannerDocument'
-                validators={{ onChange: required('Banner is required') }}
-              >
+              <form.AppField name='bannerDocument'>
                 {(field) => (
                   <field.SingleFileUpload
                     label='Banner'
-                    isRequired
                     acceptFiles='image/*'
                     text='Upload the banner here'
                   />

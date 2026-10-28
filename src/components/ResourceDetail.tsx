@@ -30,6 +30,15 @@ export function ReportDetail({ report }: { report: Publication }) {
     const [category, title] = item.replace(/^\d+\.\s*/, '').split(': ');
     return { category, title };
   };
+  const dacArray = report.dac_recommendations?.map((el) => {
+    return splitDAC(el);
+  });
+  const dacGroups = [...new Set(dacArray?.map((el) => el.category))].map((category) => {
+    return {
+      category,
+      titles: dacArray?.filter((el) => el.category === category).map((el) => el.title),
+    };
+  });
   const updateDocuments = useMutation({
     mutationFn: async ({
       documents,
@@ -239,26 +248,15 @@ export function ReportDetail({ report }: { report: Publication }) {
             </H4>
             <MarkdownRenderer text={report.abstract_md || 'No abstract'} />
           </div>
-          {report.external_url && (
-            <>
-              <Spacer size='2xl' />
-              <a href={report.external_url} target='_blank' rel='noopener noreferrer'>
-                <Button variant='link' endIcon='external-link' padding='none'>
-                  Learn more about the report
-                </Button>
-              </a>
-              <Spacer size='3xl' />
-            </>
-          )}
           <Separator color='surface-md' />
           <Spacer size='3xl' />
           <H4 weight='bold' marginBottom='none'>
-            Classifications
+            Details
           </H4>
           <Spacer size='2xl' />
           <div className='flex flex-col gap-2'>
             <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              HDP Nexus tags
+              HDP Nexus pillar
             </P>
             <div className='flex flex-wrap gap-2'>
               {(report.hdp_tags || []).length > 0 ? (
@@ -293,15 +291,17 @@ export function ReportDetail({ report }: { report: Publication }) {
           <Spacer size='2xl' />
           <div className='flex flex-col gap-2'>
             <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              Thematic tags
+              Thematic area
             </P>
             <div className='flex flex-wrap gap-2'>
               {(report.thematic_tags || []).length > 0 ? (
-                report.thematic_tags?.map((item) => (
-                  <Badge key={item} color='surface-sm' className='px-4 py-1 font-medium'>
-                    {item}
-                  </Badge>
-                ))
+                [...report.thematic_tags]
+                  ?.sort((a, b) => a.localeCompare(b))
+                  .map((item) => (
+                    <Badge key={item} color='surface-sm' className='px-4 py-1 font-medium'>
+                      {item}
+                    </Badge>
+                  ))
               ) : (
                 <Badge key='No tags' color='surface-sm' className='px-4 py-1 font-medium'>
                   No tags
@@ -312,39 +312,44 @@ export function ReportDetail({ report }: { report: Publication }) {
           <Spacer size='2xl' />
           <div className='flex flex-col gap-2'>
             <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              DAC Recommendation
+              DAC recommendation
             </P>
-            {(report.dac_recommendations || []).length > 0 ? (
+            {(dacGroups || []).length > 0 ? (
               <div className='flex flex-col rounded-sm border border-stroke'>
-                {report.dac_recommendations?.map((item, i) => (
+                {dacGroups?.map((item, i) => (
                   <div
-                    key={item}
-                    className={`p-6 ${i === report.dac_recommendations.length - 1 ? '' : 'border-stroke border-b'}`}
+                    key={item.category}
+                    className={`p-6 ${i === dacGroups.length - 1 ? '' : 'border-stroke border-b'}`}
                   >
-                    <Badge
-                      color={
-                        DAC_COLORS.find((d) => item.includes(d.id))?.color as
-                          | 'teal'
-                          | 'azure'
-                          | 'lime'
-                      }
-                      size='lg'
-                      rounded='full'
-                      className={cn(
-                        'px-4 py-1 font-medium',
-                        splitDAC(item).category === 'Coordination'
-                          ? 'bg-accent-lime/15 text-accent-lime'
-                          : splitDAC(item).category === 'Programming'
-                            ? 'bg-accent-teal/15 text-accent-teal'
-                            : 'bg-accent-azure/15 text-accent-azure',
-                      )}
-                    >
-                      {splitDAC(item).category}
-                    </Badge>
-                    <Spacer size='lg' />
                     <P weight='medium' size='xl' marginBottom='none'>
-                      {splitDAC(item).title}
+                      {item.category}
                     </P>
+                    <Spacer size='lg' />
+                    <div className='flex w-full flex-wrap gap-x-3 gap-y-2'>
+                      {item.titles.map((d) => (
+                        <Badge
+                          key={d}
+                          color={
+                            DAC_COLORS.find((d) => d.id === item.category)?.color as
+                              | 'teal'
+                              | 'azure'
+                              | 'lime'
+                          }
+                          size='lg'
+                          rounded='full'
+                          className={cn(
+                            'px-4 py-1 font-medium',
+                            item.category === 'Coordination'
+                              ? 'bg-accent-lime/15 text-accent-lime'
+                              : item.category === 'Programming'
+                                ? 'bg-accent-teal/15 text-accent-teal'
+                                : 'bg-accent-azure/15 text-accent-azure',
+                          )}
+                        >
+                          {d}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -371,33 +376,28 @@ export function ReportDetail({ report }: { report: Publication }) {
                 Primary document
               </P>
               <Spacer size='lg' />
-              <P marginBottom='none'>
-                {
-                  report.assets.find((el) => el.role === 'primary_document' && el.position === 1)
-                    ?.original_filename
-                }
-              </P>
-              <Spacer size='sm' />
-              <P size='sm' className='text-content-secondary' marginBottom='none'>
-                {report.assets
-                  .find((el) => el.role === 'primary_document' && el.position === 1)
-                  ?.content_type?.replace('application/', '')
-                  ?.toUpperCase()}
-              </P>
-              <Spacer size='2xl' />
-              <a
-                href={
-                  report.assets.find((el) => el.role === 'primary_document' && el.position === 1)
-                    ?.url
-                }
-                className='w-full'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Button endIcon='download' variant='primary' className='w-full'>
-                  Download
-                </Button>
-              </a>
+              <div className='flex flex-wrap items-center gap-4'>
+                {report.external_url && (
+                  <a href={report.external_url} target='_blank' rel='noopener noreferrer'>
+                    <Button variant='outline' endIcon='external-link'>
+                      Read online
+                    </Button>
+                  </a>
+                )}
+                <a
+                  href={
+                    report.assets.find((el) => el.role === 'primary_document' && el.position === 1)
+                      ?.url
+                  }
+                  className='w-full'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <Button endIcon='download' variant='outline'>
+                    Download
+                  </Button>
+                </a>
+              </div>
               {isUserAdmin && (
                 <>
                   <Spacer size='xl' />
