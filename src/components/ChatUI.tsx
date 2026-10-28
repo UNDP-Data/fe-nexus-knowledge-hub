@@ -61,7 +61,7 @@ function addCitations(
 ) {
   return message.replace(/\[(\d+)\]/g, (match, number) => {
     const citation = citations.find((c) => c.citation_number === Number(number));
-    if (!citation) return match;
+    if (!citation?.document_id) return match;
     return `[cite:${citation.title}:${citation.document_id}](/all-resources?reportId=${citation.document_id})`;
   });
 }
