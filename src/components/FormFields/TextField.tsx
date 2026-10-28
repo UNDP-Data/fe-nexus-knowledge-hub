@@ -28,7 +28,8 @@ export function TextField({
         placeholder={placeholder}
         rounded='base'
         value={field.state.value}
-        className='w-full'
+        aria-invalid={field.state.meta.isValid}
+        className={`w-full ${field.state.meta.errors.length > 0 ? 'border-error' : ''}`}
       />
       {!field.state.meta.isValid && (
         <ErrorText errors={field.state.meta.errors.map((e) => e?.message ?? e).join(', ')} />

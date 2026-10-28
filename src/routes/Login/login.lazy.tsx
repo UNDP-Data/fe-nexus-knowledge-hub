@@ -13,6 +13,17 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [passwordValue, setPasswordValue] = useState('');
   const [isError, setIsError] = useState(false);
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordValue.trim() === '') return;
+    if (MD5(passwordValue).toString() !== HASHED_KEY) {
+      setIsError(true);
+      return;
+    }
+    setIsError(false);
+    sessionStorage.setItem(SESSION_STORAGE_NAME, passwordValue);
+    navigate({ to: '/', reloadDocument: true });
+  };
   return (
     <div className='w-full px-8'>
       <div className='mx-auto mt-10 w-full max-w-105 bg-surface p-8'>
@@ -37,7 +48,7 @@ export function LoginPage() {
             </Button>
           </>
         ) : (
-          <>
+          <form onSubmit={handleLogin}>
             <P marginBottom='none'>Enter password</P>
             <Spacer size='xl' />
             <Input
@@ -50,21 +61,14 @@ export function LoginPage() {
             <Spacer size='3xl' />
             <Button
               variant='primary'
+              type='submit'
               disabled={passwordValue.trim() === ''}
-              onClick={() => {
-                if (MD5(passwordValue).toString() !== HASHED_KEY) {
-                  setIsError(true);
-                  return;
-                }
-                setIsError(false);
-                sessionStorage.setItem(SESSION_STORAGE_NAME, passwordValue);
-                navigate({ to: '/' });
-              }}
+              onClick={() => {}}
             >
               Login
             </Button>
-            {isError && <P className='text-error'>Incorrect password</P>}
-          </>
+            {isError && <P className='mt-4 text-error'>Incorrect password</P>}
+          </form>
         )}
       </div>
     </div>

@@ -9,7 +9,17 @@ import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { toast } from '@undp/design-system-react/ToasterHooks';
 import { H2, H4, P } from '@undp/design-system-react/Typography';
-import { ArrowLeft, Edit, File, FileText, Image } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  DownloadIcon,
+  Edit,
+  ExternalLink,
+  File,
+  FileText,
+  Image,
+  Trash,
+} from 'lucide-react';
 import { useState } from 'react';
 import { API_BASE, DAC_COLORS, HDP_TAG_COLORS, SESSION_STORAGE_NAME } from '@/constants';
 import { useAppForm } from '@/lib/form';
@@ -22,9 +32,9 @@ type ReportPayload = ReturnType<typeof toReportPayload>;
 export function ReportDetail({ report }: { report: Publication }) {
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-  const [uploadingFileType, setUploadingFileType] = useState<'banner' | 'primary_document' | ''>(
-    '',
-  );
+  const [uploadingFileType, setUploadingFileType] = useState<
+    'banner' | 'primary_document' | 'attachment' | ''
+  >('');
   const isUserAdmin = isAdmin();
   const splitDAC = (item: string) => {
     const [category, title] = item.replace(/^\d+\.\s*/, '').split(': ');
@@ -45,12 +55,12 @@ export function ReportDetail({ report }: { report: Publication }) {
       documentType,
     }: {
       documents: File[];
-      documentType: 'primary_document' | 'banner';
+      documentType: 'primary_document' | 'banner' | 'attachment';
     }) => {
       const password = sessionStorage.getItem(SESSION_STORAGE_NAME) || '';
       const formData = new FormData();
       formData.append('role', documentType);
-      formData.append('position', '1');
+      if (documentType !== 'attachment') formData.append('position', '1');
       formData.append('file', documents[0]);
       const response = await fetch(`${API_BASE}/admin/publications/${report.id}/assets`, {
         method: 'POST',
@@ -69,6 +79,7 @@ export function ReportDetail({ report }: { report: Publication }) {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['get-all-resources'] });
+      await queryClient.invalidateQueries({ queryKey: ['get-resource'] });
       toast({
         title: 'Success',
         variant: 'success',
@@ -79,6 +90,41 @@ export function ReportDetail({ report }: { report: Publication }) {
     },
     onError: (error) => {
       console.error('Failed to update publication:', error);
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description: error.message,
+        duration: 3000,
+      });
+    },
+  });
+  const deleteAsset = useMutation({
+    mutationFn: async ({ reportId, assetId }: { reportId: string; assetId: string }) => {
+      const password = sessionStorage.getItem(SESSION_STORAGE_NAME) || '';
+      const response = await fetch(`${API_BASE}/admin/publications/${reportId}/assets/${assetId}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: '*/*',
+          'X-API-Key': password,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete the asset: ${await response.text()}`);
+      }
+      return response.status !== 204 ? await response.json() : null;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-all-resources'] });
+      await queryClient.invalidateQueries({ queryKey: ['get-resource'] });
+      toast({
+        title: 'Success',
+        variant: 'success',
+        description: 'Documents deleted successfully.',
+        duration: 3000,
+      });
+    },
+    onError: (error) => {
+      console.error('Failed to delete the asset:', error);
       toast({
         title: 'Error',
         variant: 'destructive',
@@ -357,7 +403,7 @@ export function ReportDetail({ report }: { report: Publication }) {
               <Badge
                 key='No DAC Recommendation'
                 color='surface-sm'
-                className='px-4 py-1 font-medium'
+                className='w-fit px-4 py-1 font-medium'
               >
                 No DAC Recommendation
               </Badge>
@@ -366,7 +412,7 @@ export function ReportDetail({ report }: { report: Publication }) {
         </GridItem>
         <GridItem noOfColSpan={1}>
           {report.assets.find((el) => el.role === 'primary_document' && el.position === 1) && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col bg-surface p-3'>
               <P
                 className='text-content-secondary uppercase'
                 weight='bold'
@@ -376,31 +422,45 @@ export function ReportDetail({ report }: { report: Publication }) {
                 Primary document
               </P>
               <Spacer size='lg' />
-              <div className='flex flex-wrap items-center gap-4'>
-                {report.external_url && (
-                  <a href={report.external_url} target='_blank' rel='noopener noreferrer'>
-                    <Button variant='outline' endIcon='external-link'>
-                      Read online
-                    </Button>
-                  </a>
-                )}
-                <a
-                  href={
-                    report.assets.find((el) => el.role === 'primary_document' && el.position === 1)
-                      ?.url
-                  }
-                  className='w-full'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <Button endIcon='download' variant='outline'>
-                    Download
-                  </Button>
-                </a>
+              <div className='flex w-full flex-wrap items-center justify-between gap-2'>
+                <div className='flex items-center gap-2'>
+                  <File />
+                  <P weight='medium' marginBottom='none'>
+                    Full Report
+                  </P>
+                </div>
+                <div className='flex flex-wrap items-center gap-4'>
+                  {report.external_url && (
+                    <a href={report.external_url} target='_blank' rel='noopener noreferrer'>
+                      <Button variant='icon' padding='sm' color='surface-md'>
+                        <ExternalLink size={20} />
+                      </Button>
+                    </a>
+                  )}
+                  {report.assets.find((el) => el.role === 'primary_document' && el.position === 1)
+                    ?.url && (
+                    <a
+                      href={
+                        report.assets.find(
+                          (el) => el.role === 'primary_document' && el.position === 1,
+                        )?.url
+                      }
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <Button variant='icon' padding='sm' color='primary'>
+                        <DownloadIcon size={20} />
+                      </Button>
+                    </a>
+                  )}
+                </div>
               </div>
               {isUserAdmin && (
                 <>
-                  <Spacer size='xl' />
+                  <Spacer size='2xl' />
+                  <Separator color='surface-xl' />
+                  <Spacer size='2xl' />
+
                   <FileUpload
                     accept='.pdf,.docx,image/*'
                     multiple={false}
@@ -416,11 +476,10 @@ export function ReportDetail({ report }: { report: Publication }) {
                       }
                     }}
                   >
-                    <div className='flex w-full cursor-pointer items-center justify-start gap-2 border-2 border-primary bg-background p-4 text-primary hover:bg-surface-hover'>
-                      <File />
+                    <div className='flex w-full cursor-pointer items-center justify-start gap-2 p-0 text-primary hover:underline'>
                       {updateDocuments.isPending && uploadingFileType === 'primary_document'
                         ? 'Uploading...'
-                        : 'Upload the report here'}
+                        : 'Upload/Replace the report here'}
                     </div>
                   </FileUpload>
                 </>
@@ -450,17 +509,59 @@ export function ReportDetail({ report }: { report: Publication }) {
                     .filter((el) => el.role !== 'banner')
                     .filter((el) => !(el.role === 'primary_document' && el.position === 1))
                     .map((asset) => (
-                      <a
-                        key={asset.id}
-                        href={asset.url}
-                        className='w-full bg-surface'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        <P marginBottom='none'>{asset.original_filename}</P>
-                      </a>
+                      <div className='flex flex-col gap-4 bg-surface p-3' key={asset.id}>
+                        <P marginBottom='none' className='truncate'>
+                          {asset.original_filename}
+                        </P>
+                        <div className='flex gap-4'>
+                          <a href={asset.url} target='_blank' rel='noopener noreferrer'>
+                            <Download />
+                          </a>
+                          {isUserAdmin && (
+                            <button
+                              type='button'
+                              disabled={deleteAsset.isPending}
+                              onClick={() => {
+                                deleteAsset.mutate({
+                                  reportId: report.id,
+                                  assetId: asset.id,
+                                });
+                              }}
+                              className='disabled:cursor-not-allowed disabled:opacity-disabled'
+                            >
+                              <Trash className='text-primary hover:text-primary-hover' />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     ))}
                 </div>
+                {isUserAdmin && (
+                  <>
+                    <Spacer size='lg' />
+                    <FileUpload
+                      accept='.pdf,.docx,image/*'
+                      multiple={true}
+                      value={[]}
+                      disabled={updateDocuments.isPending && uploadingFileType === 'attachment'}
+                      onFileChange={(files) => {
+                        if (files && files.length > 0) {
+                          setUploadingFileType('attachment');
+                          updateDocuments.mutate({
+                            documents: files,
+                            documentType: 'attachment',
+                          });
+                        }
+                      }}
+                    >
+                      <div className='flex w-fit cursor-pointer items-center justify-start gap-2 p-0 text-primary hover:underline'>
+                        {updateDocuments.isPending && uploadingFileType === 'primary_document'
+                          ? 'Uploading...'
+                          : 'Upload new attachment (max 10 allowed)'}
+                      </div>
+                    </FileUpload>
+                  </>
+                )}
               </div>
             </>
           )}

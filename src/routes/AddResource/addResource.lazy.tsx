@@ -93,7 +93,7 @@ export function AddResource() {
 
   return (
     <div className='w-full'>
-      <Container width='base' className='m-auto flex flex-col px-8! pt-8! pb-16!'>
+      <Container width='base' className='m-auto flex w-full flex-col px-8! pt-8! pb-16! lg:w-1/2'>
         <div className='flex flex-col items-start justify-start gap-4'>
           <H2 marginBottom='none'>Add a new resource</H2>
           <P size='base' marginBottom='none' className='text-content-secondary'>
@@ -120,6 +120,16 @@ export function AddResource() {
                 <Button type='submit' color='primary' disabled={!canSubmit || isSubmitting}>
                   {isSubmitting ? 'Saving...' : 'Submit'}
                 </Button>
+                {!canSubmit && (
+                  <P
+                    className='mt-4 text-error'
+                    size='base'
+                    marginBottom='none'
+                    decoration='italic'
+                  >
+                    Cannot submit the form as some required fields are missing
+                  </P>
+                )}
               </div>
             )}
           </form.Subscribe>

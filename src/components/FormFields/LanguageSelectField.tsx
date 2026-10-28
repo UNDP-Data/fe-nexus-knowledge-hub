@@ -48,6 +48,7 @@ export function LanguageSelectField({
         isSearchable
         isMulti={true}
         size='sm'
+        className={`${field.state.meta.errors.length > 0 ? 'border-error!' : ''}`}
       />
       {!field.state.meta.isValid && (
         <ErrorText errors={field.state.meta.errors.map((e) => e?.message ?? e).join(', ')} />

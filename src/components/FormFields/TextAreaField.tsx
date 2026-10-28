@@ -27,7 +27,7 @@ export function TextAreaField({
         placeholder={placeholder}
         rounded='base'
         value={field.state.value}
-        className='w-full'
+        className={`w-full ${field.state.meta.errors.length > 0 ? 'border-error' : ''}`}
       />
       {!field.state.meta.isValid && (
         <ErrorText errors={field.state.meta.errors.map((e) => e?.message ?? e).join(', ')} />

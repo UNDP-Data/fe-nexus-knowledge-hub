@@ -41,7 +41,7 @@ export interface Publication extends PublicationSummary {
 
 export interface PublicationAsset {
   id: string;
-  role: 'banner' | 'primary_document';
+  role: 'banner' | 'primary_document' | 'attachment';
   position: number;
   original_filename: string;
   content_type: string;

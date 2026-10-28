@@ -19,8 +19,10 @@ import './styles/style.css';
 import { ChatbotUI } from './components/ChatUI';
 import createAddReportRoute from './routes/AddResource/addResource.route';
 import createLoginRoute from './routes/Login/login.route';
+import { metaDataDefinition } from './utils/metaDataDefinition';
 
 const rootRoute = createRootRoute({
+  head: () => ({ meta: metaDataDefinition() }),
   component: () => (
     <div className='flex min-h-screen flex-col gap-0'>
       <HeaderEl />

@@ -7,7 +7,6 @@ import {
   BannerBodySidebar,
 } from '@undp/design-system-react/Banner';
 import { Button } from '@undp/design-system-react/Button';
-import { Container } from '@undp/design-system-react/Container';
 import { Drawer, DrawerBody, DrawerContent, DrawerTrigger } from '@undp/design-system-react/Drawer';
 import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHeader';
@@ -51,10 +50,11 @@ function App() {
         bodyMaxWidth='lg'
         padding='base'
         sidebarWidth='base'
+        className='px-6!'
       >
         <BannerBody>
           <BannerBodySidebar>
-            <H3>Our purpose</H3>
+            <H3 className='px-0 sm:px-6'>Our purpose</H3>
           </BannerBodySidebar>
           <BannerBodyContent>
             <P>
@@ -72,7 +72,7 @@ function App() {
         </BannerBody>
       </Banner>
       <Spacer size='8xl' />
-      <Container width='lg' className='m-auto'>
+      <div className='m-auto w-full px-6 lg:w-2/3 lg:px-0'>
         {isLoading ? (
           <Spinner size='lg' className='mx-auto my-20' />
         ) : isError ? (
@@ -129,11 +129,11 @@ function App() {
                   ))}
           </Grid>
         )}
-      </Container>
+      </div>
       <Spacer size='8xl' />
       <div className='w-full bg-surface'>
         <Spacer size='8xl' />
-        <Container width='lg' className='m-auto'>
+        <div className='m-auto w-full px-6 lg:w-2/3 lg:px-0'>
           <H6>Powered by</H6>
           <Spacer size='xl' />
           <div className='flex w-full flex-wrap items-center gap-x-12 gap-y-8'>
@@ -150,7 +150,7 @@ function App() {
               className='h-20'
             />
           </div>
-        </Container>
+        </div>
         <Spacer size='8xl' />
       </div>
     </>
