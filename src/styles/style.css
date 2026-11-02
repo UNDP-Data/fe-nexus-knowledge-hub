@@ -1,4 +1,3 @@
 @import "tailwindcss";
-@import "@undp/design-system-react/style.css";
-@import "@undp/design-system-react/theme.css";
-@import "@undp/data-viz/style.css";
+@import "@undp/design-system-react/tailwind.css";
+@import "@undp/data-viz/tailwind.css";

@@ -84,7 +84,6 @@ export function AddResource() {
     ...reportFormOptions,
     defaultValues: {
       ...reportFormOptions.defaultValues,
-      publicationYear: new Date().getFullYear(),
     } as ReportFormValues,
     onSubmit: async ({ value }) => {
       await createReport.mutateAsync(toReportPayload(value)).catch(() => {});
@@ -114,13 +113,22 @@ export function AddResource() {
           <Spacer size='3xl' />
           <ReportFilesForm form={form} />
           <Spacer size='3xl' />
-          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
-            {([canSubmit, isSubmitting]) => (
+          <form.Subscribe
+            selector={(state) =>
+              [
+                state.canSubmit,
+                state.isSubmitting,
+                state.isValid,
+                state.submissionAttempts,
+              ] as const
+            }
+          >
+            {([canSubmit, isSubmitting, isValid, submissionAttempts]) => (
               <div>
                 <Button type='submit' color='primary' disabled={!canSubmit || isSubmitting}>
                   {isSubmitting ? 'Saving...' : 'Submit'}
                 </Button>
-                {!canSubmit && (
+                {!isValid && submissionAttempts > 0 && (
                   <P
                     className='mt-4 text-error'
                     size='base'

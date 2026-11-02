@@ -32,5 +32,6 @@ export function metaDataDefinition({
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: imageAlt },
     { property: 'og:locale', content: 'en_US' },
+    { property: 'twitter:card', content: 'summary_large_image' },
   ];
 }

@@ -28,7 +28,8 @@ export function NumberField({
         placeholder={placeholder}
         rounded='base'
         value={field.state.value}
-        className='w-full'
+        type='number'
+        className={`w-full ${field.state.meta.errors.length > 0 ? 'border-error' : ''}`}
       />
       {!field.state.meta.isValid && (
         <ErrorText errors={field.state.meta.errors.map((e) => e?.message ?? e).join(', ')} />

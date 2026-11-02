@@ -13,7 +13,7 @@ import { useMemo, useState } from 'react';
 import { ResourceCard } from '@/components/ResourceCard';
 import { ReportDetail } from '@/components/ResourceDetail';
 import { CardGridSkeleton, FilterSkeleton } from '@/components/Skeleton';
-import { API_BASE, SESSION_STORAGE_NAME, STATUSES } from '@/constants';
+import { API_BASE, SESSION_STORAGE_NAME, STATUSES, UN_LANGUAGES } from '@/constants';
 import type { PublicationsResponse, Taxonomies } from '@/Types';
 import { isAdmin } from '@/utils/isAdmin';
 
@@ -83,47 +83,50 @@ export function AllResourcesPage() {
   const [thematicTags, setThematicTags] = useState<string[]>([]);
 
   const filteredData = useMemo(() => {
-    return data?.filter((report) => {
-      const documentTypeMatch =
-        documentTypes.length === 0 || documentTypes.includes(report.document_type);
-      const regionMatch =
-        regionAndCountries.length === 0 ||
-        regionAndCountries.some((r) => report.locations.map((el) => el.name).includes(r));
-      const hdpTagMatch = hdpTags.length === 0 || hdpTags.some((t) => report.hdp_tags.includes(t));
-      const dacRecommendationMatch =
-        dacRecommendation.length === 0 ||
-        dacRecommendation.some((d) => report.dac_recommendations.includes(d));
-      const publicationYearMatch =
-        publicationYear.length === 0 || publicationYear.includes(`${report.publication_year}`);
-      const languageMatch =
-        language.length === 0 || language.some((t) => report.languages.find((l) => l.code === t));
-      const affiliationMatch =
-        affiliations.length === 0 || affiliations.some((t) => report.affiliations.includes(t));
-      const thematicTagMatch =
-        thematicTags.length === 0 || thematicTags.some((t) => report.thematic_tags.includes(t));
-      const searchStringMatch =
-        searchString.length === 0 ||
-        report.title?.toLowerCase().includes(searchString.toLowerCase()) ||
-        report.abstract_md?.toLowerCase().includes(searchString.toLowerCase());
-      const statusFilterMatch =
-        !isUserAdmin ||
-        statusFilter.length === 0 ||
-        statusFilter.includes(report.status) ||
-        (statusFilter.includes('Pending') && report.status === 'pending') ||
-        (statusFilter.includes('Approved') && report.status === 'approved');
-      return (
-        documentTypeMatch &&
-        regionMatch &&
-        hdpTagMatch &&
-        dacRecommendationMatch &&
-        publicationYearMatch &&
-        languageMatch &&
-        affiliationMatch &&
-        thematicTagMatch &&
-        searchStringMatch &&
-        statusFilterMatch
-      );
-    });
+    return data
+      ?.filter((report) => {
+        const documentTypeMatch =
+          documentTypes.length === 0 || documentTypes.includes(report.document_type);
+        const regionMatch =
+          regionAndCountries.length === 0 ||
+          regionAndCountries.some((r) => report.locations.map((el) => el.name).includes(r));
+        const hdpTagMatch =
+          hdpTags.length === 0 || hdpTags.some((t) => report.hdp_tags.includes(t));
+        const dacRecommendationMatch =
+          dacRecommendation.length === 0 ||
+          dacRecommendation.some((d) => report.dac_recommendations.includes(d));
+        const publicationYearMatch =
+          publicationYear.length === 0 || publicationYear.includes(`${report.publication_year}`);
+        const languageMatch =
+          language.length === 0 || language.some((t) => report.languages.find((l) => l.code === t));
+        const affiliationMatch =
+          affiliations.length === 0 || affiliations.some((t) => report.affiliations.includes(t));
+        const thematicTagMatch =
+          thematicTags.length === 0 || thematicTags.some((t) => report.thematic_tags.includes(t));
+        const searchStringMatch =
+          searchString.length === 0 ||
+          report.title?.toLowerCase().includes(searchString.toLowerCase()) ||
+          report.abstract_md?.toLowerCase().includes(searchString.toLowerCase());
+        const statusFilterMatch =
+          !isUserAdmin ||
+          statusFilter.length === 0 ||
+          statusFilter.includes(report.status) ||
+          (statusFilter.includes('Pending') && report.status === 'pending') ||
+          (statusFilter.includes('Approved') && report.status === 'approved');
+        return (
+          documentTypeMatch &&
+          regionMatch &&
+          hdpTagMatch &&
+          dacRecommendationMatch &&
+          publicationYearMatch &&
+          languageMatch &&
+          affiliationMatch &&
+          thematicTagMatch &&
+          searchStringMatch &&
+          statusFilterMatch
+        );
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
   }, [
     data,
     documentTypes,
@@ -181,10 +184,10 @@ export function AllResourcesPage() {
           }}
         >
           <GridItem noOfColSpan={1}>
-            <div className='undp-scrollbar sticky top-10 max-h-auto max-h-auto bg-surface-2xs p-4 md:max-h-[calc(100vh-5rem)]'>
-              <div className='flex justify-between'>
+            <div className='undp-scrollbar sticky top-10 max-h-auto bg-surface-2xs p-4 md:max-h-[calc(100vh-5rem)]'>
+              <div className='flex items-center justify-between'>
                 <div className='flex gap-4'>
-                  <H6 marginBottom='none' className='mt-1'>
+                  <H6 marginBottom='none'>
                     Filters {appliedFiltersCount ? `(${appliedFiltersCount})` : ''}
                   </H6>
                   {appliedFiltersCount > 0 && (
@@ -359,10 +362,12 @@ export function AllResourcesPage() {
                         onChange={(d) => {
                           setLanguage(d.map((item) => `${item.value}`));
                         }}
-                        options={taxonomies.languages.map((item) => ({
-                          label: item.name,
-                          value: item.code,
-                        }))}
+                        options={taxonomies.languages
+                          .filter((l) => UN_LANGUAGES.includes(l.name))
+                          .map((item) => ({
+                            label: item.name,
+                            value: item.code,
+                          }))}
                         showCheck
                         isMulti
                         isDisabled={!dataLoading && !data}

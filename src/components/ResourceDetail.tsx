@@ -8,7 +8,7 @@ import { MarkdownRenderer } from '@undp/design-system-react/MarkdownRenderer';
 import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { toast } from '@undp/design-system-react/ToasterHooks';
-import { H2, H4, P } from '@undp/design-system-react/Typography';
+import { H2, H4, H6, P } from '@undp/design-system-react/Typography';
 import {
   ArrowLeft,
   Download,
@@ -20,7 +20,7 @@ import {
   Image,
   Trash,
 } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { API_BASE, DAC_COLORS, HDP_TAG_COLORS, SESSION_STORAGE_NAME } from '@/constants';
 import { useAppForm } from '@/lib/form';
 import type { Publication } from '@/Types';
@@ -236,54 +236,58 @@ export function ReportDetail({ report }: { report: Publication }) {
       <Separator color='surface-md' />
       <Spacer size='3xl' />
       <Grid noOfCol={{ base: 1, md: 2, lg: 4 }}>
-        {report.authors && (
-          <GridItem noOfColSpan={1}>
-            <div className='flex flex-col gap-2'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-                Author
-              </P>
-              <P size='base' marginBottom='none'>
-                {report.authors}
-              </P>
-            </div>
-          </GridItem>
-        )}
-        {report.affiliations?.length > 0 && (
-          <GridItem noOfColSpan={1}>
-            <div className='flex flex-col gap-2'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-                Affiliation
-              </P>
-              <P size='base' marginBottom='none'>
-                {report.affiliations?.join(', ')}
-              </P>
-            </div>
-          </GridItem>
-        )}
-        {report.locations?.length > 0 && (
-          <GridItem noOfColSpan={1}>
-            <div className='flex flex-col gap-2'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-                Region / Country
-              </P>
-              <P size='base' marginBottom='none'>
-                {report.locations.map((item) => item.name).join(', ')}
-              </P>
-            </div>
-          </GridItem>
-        )}
-        {report.languages?.length > 0 && (
-          <GridItem noOfColSpan={1}>
-            <div className='flex flex-col gap-2'>
-              <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-                Language
-              </P>
-              <P size='base' marginBottom='none'>
-                {report.languages.map((item) => item.name).join(', ')}
-              </P>
-            </div>
-          </GridItem>
-        )}
+        <GridItem noOfColSpan={1}>
+          <div className='flex flex-col gap-2'>
+            <H6 marginBottom='none'>Author</H6>
+            <P
+              size='base'
+              marginBottom='none'
+              className={!report.authors ? 'text-content-quaternary' : ''}
+            >
+              {report.authors || 'Not available'}
+            </P>
+          </div>
+        </GridItem>
+        <GridItem noOfColSpan={1}>
+          <div className='flex flex-col gap-2'>
+            <H6 marginBottom='none'>Affiliation</H6>
+            <P
+              size='base'
+              marginBottom='none'
+              className={report.affiliations.length === 0 ? 'text-content-quaternary' : ''}
+            >
+              {report.affiliations.length > 0 ? report.affiliations.join(', ') : 'Not available'}
+            </P>
+          </div>
+        </GridItem>
+        <GridItem noOfColSpan={1}>
+          <div className='flex flex-col gap-2'>
+            <H6 marginBottom='none'>Region / Country</H6>
+            <P
+              size='base'
+              marginBottom='none'
+              className={report.locations.length === 0 ? 'text-content-quaternary' : ''}
+            >
+              {report.locations.length > 0
+                ? report.locations.map((item) => item.name).join(', ')
+                : 'Not available'}
+            </P>
+          </div>
+        </GridItem>
+        <GridItem noOfColSpan={1}>
+          <div className='flex flex-col gap-2'>
+            <H6 marginBottom='none'>Language</H6>
+            <P
+              size='base'
+              marginBottom='none'
+              className={report.languages.length === 0 ? 'text-content-quaternary' : ''}
+            >
+              {report.languages.length > 0
+                ? report.languages.map((item) => item.name).join(', ')
+                : 'Not available'}
+            </P>
+          </div>
+        </GridItem>
       </Grid>
       <Spacer size='5xl' />
       <Grid noOfCol={{ base: 1, md: 4 }} gap='48px'>
@@ -301,9 +305,7 @@ export function ReportDetail({ report }: { report: Publication }) {
           </H4>
           <Spacer size='2xl' />
           <div className='flex flex-col gap-2'>
-            <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              HDP Nexus pillar
-            </P>
+            <H6 marginBottom='none'>HDP Nexus pillar</H6>
             <div className='flex flex-wrap gap-2'>
               {(report.hdp_tags || []).length > 0 ? (
                 report.hdp_tags?.map((item) => (
@@ -334,11 +336,9 @@ export function ReportDetail({ report }: { report: Publication }) {
               )}
             </div>
           </div>
-          <Spacer size='2xl' />
+          <Spacer size='4xl' />
           <div className='flex flex-col gap-2'>
-            <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              Thematic area
-            </P>
+            <H6 marginBottom='none'>Thematic area</H6>
             <div className='flex flex-wrap gap-2'>
               {(report.thematic_tags || []).length > 0 ? (
                 [...report.thematic_tags]
@@ -355,22 +355,23 @@ export function ReportDetail({ report }: { report: Publication }) {
               )}
             </div>
           </div>
-          <Spacer size='2xl' />
-          <div className='flex flex-col gap-2'>
-            <P className='text-content-secondary' weight='medium' size='base' marginBottom='none'>
-              DAC recommendation
-            </P>
+          <Spacer size='4xl' />
+          <div className='flex flex-col'>
+            <H6 marginBottom='none'>DAC recommendation</H6>
+            <Spacer size='xl' />
             {(dacGroups || []).length > 0 ? (
-              <div className='flex flex-col rounded-sm border border-stroke'>
-                {dacGroups?.map((item, i) => (
-                  <div
-                    key={item.category}
-                    className={`p-6 ${i === dacGroups.length - 1 ? '' : 'border-stroke border-b'}`}
-                  >
-                    <P weight='medium' size='xl' marginBottom='none'>
+              <div className='flex flex-col'>
+                {dacGroups?.map((item) => (
+                  <Fragment key={item.category}>
+                    <P
+                      className='text-content-secondary uppercase'
+                      weight='bold'
+                      size='sm'
+                      marginBottom='none'
+                    >
                       {item.category}
                     </P>
-                    <Spacer size='lg' />
+                    <Spacer size='base' />
                     <div className='flex w-full flex-wrap gap-x-3 gap-y-2'>
                       {item.titles.map((d) => (
                         <Badge
@@ -396,7 +397,8 @@ export function ReportDetail({ report }: { report: Publication }) {
                         </Badge>
                       ))}
                     </div>
-                  </div>
+                    <Spacer size='2xl' />
+                  </Fragment>
                 ))}
               </div>
             ) : (
@@ -411,17 +413,17 @@ export function ReportDetail({ report }: { report: Publication }) {
           </div>
         </GridItem>
         <GridItem noOfColSpan={1}>
-          {report.assets.find((el) => el.role === 'primary_document' && el.position === 1) && (
-            <div className='flex flex-col bg-surface p-3'>
-              <P
-                className='text-content-secondary uppercase'
-                weight='bold'
-                size='base'
-                marginBottom='none'
-              >
-                Primary document
-              </P>
-              <Spacer size='lg' />
+          <div className='flex flex-col bg-surface p-3'>
+            <P
+              className='text-content-secondary uppercase'
+              weight='bold'
+              size='base'
+              marginBottom='none'
+            >
+              Primary document
+            </P>
+            <Spacer size='lg' />
+            {report.assets.find((el) => el.role === 'primary_document' && el.position === 1) ? (
               <div className='flex w-full flex-wrap items-center justify-between gap-2'>
                 <div className='flex items-center gap-2'>
                   <File />
@@ -455,37 +457,45 @@ export function ReportDetail({ report }: { report: Publication }) {
                   )}
                 </div>
               </div>
-              {isUserAdmin && (
-                <>
-                  <Spacer size='2xl' />
-                  <Separator color='surface-xl' />
-                  <Spacer size='2xl' />
+            ) : (
+              <div className='flex items-center gap-2 text-content-tertiary'>
+                <File />
+                <P weight='medium' marginBottom='none'>
+                  No report available
+                </P>
+              </div>
+            )}
 
-                  <FileUpload
-                    accept='.pdf,.docx,image/*'
-                    multiple={false}
-                    value={[]}
-                    disabled={updateDocuments.isPending && uploadingFileType === 'primary_document'}
-                    onFileChange={(files) => {
-                      if (files && files.length > 0) {
-                        setUploadingFileType('primary_document');
-                        updateDocuments.mutate({
-                          documents: files,
-                          documentType: 'primary_document',
-                        });
-                      }
-                    }}
-                  >
-                    <div className='flex w-full cursor-pointer items-center justify-start gap-2 p-0 text-primary hover:underline'>
-                      {updateDocuments.isPending && uploadingFileType === 'primary_document'
-                        ? 'Uploading...'
-                        : 'Upload/Replace the report here'}
-                    </div>
-                  </FileUpload>
-                </>
-              )}
-            </div>
-          )}
+            {isUserAdmin && (
+              <>
+                <Spacer size='2xl' />
+                <Separator color='surface-xl' />
+                <Spacer size='2xl' />
+
+                <FileUpload
+                  accept='.pdf,.docx,image/*'
+                  multiple={false}
+                  value={[]}
+                  disabled={updateDocuments.isPending && uploadingFileType === 'primary_document'}
+                  onFileChange={(files) => {
+                    if (files && files.length > 0) {
+                      setUploadingFileType('primary_document');
+                      updateDocuments.mutate({
+                        documents: files,
+                        documentType: 'primary_document',
+                      });
+                    }
+                  }}
+                >
+                  <div className='flex w-full cursor-pointer items-center justify-start gap-2 p-0 text-primary hover:underline'>
+                    {updateDocuments.isPending && uploadingFileType === 'primary_document'
+                      ? 'Uploading...'
+                      : 'Upload/Replace the report here'}
+                  </div>
+                </FileUpload>
+              </>
+            )}
+          </div>
           {report.assets.filter(
             (el) =>
               !((el.role === 'primary_document' && el.position === 1) || el.role === 'banner'),

@@ -13,11 +13,15 @@ import { PageHeader, PageHeaderContent } from '@undp/design-system-react/PageHea
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { Spinner } from '@undp/design-system-react/Spinner';
 import { A, H1, H3, H4, H6, P } from '@undp/design-system-react/Typography';
+import { lazy, Suspense } from 'react';
 import { ResourceCard } from './components/ResourceCard';
-import { ReportDetail } from './components/ResourceDetail';
 import { CardSkeleton } from './components/Skeleton';
 import { API_BASE } from './constants';
 import type { PublicationsResponse } from './Types';
+
+const ReportDetail = lazy(() =>
+  import('./components/ResourceDetail').then((m) => ({ default: m.ReportDetail })),
+);
 
 function useRecentReportData() {
   return useQuery({
@@ -121,7 +125,9 @@ function App() {
                         </DrawerTrigger>
                         <DrawerContent>
                           <DrawerBody>
-                            <ReportDetail report={report} />
+                            <Suspense fallback={<Spinner />}>
+                              <ReportDetail report={report} />
+                            </Suspense>
                           </DrawerBody>
                         </DrawerContent>
                       </Drawer>

@@ -4,7 +4,7 @@ import { Grid, GridItem } from '@undp/design-system-react/Grid';
 import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { H5 } from '@undp/design-system-react/Typography';
-import { API_BASE } from '@/constants';
+import { API_BASE, UN_LANGUAGES } from '@/constants';
 import { withForm } from '@/lib/form';
 import type { Locations, StatusType, Taxonomies } from '@/Types';
 
@@ -71,14 +71,6 @@ const urlValidator = ({ value }: { value: string }) => {
   if (value === undefined || value === null) return 'URL is required';
   if (value.length > 2000) return 'Link must be 2000 characters or fewer';
   if (!/^https?:\/\/.+/.test(value)) return 'Link must start with http:// or https://';
-  return undefined;
-};
-
-const yearValidator = ({ value }: { value: number | undefined }) => {
-  if (value === undefined || Number.isNaN(value)) return 'Publication year is required';
-  const max = new Date().getFullYear() + 1;
-  if (!Number.isInteger(value) || value < 1900 || value > max)
-    return `Enter a year between 1900 and ${max}`;
   return undefined;
 };
 
@@ -178,7 +170,10 @@ export const ReportMetadataForm = withForm({
               </form.AppField>
             </GridItem>
             <GridItem noOfColSpan={1}>
-              <form.AppField name='publicationYear' validators={{ onChange: yearValidator }}>
+              <form.AppField
+                name='publicationYear'
+                validators={{ onChange: required('Publication year is required') }}
+              >
                 {(field) => (
                   <field.NumberField
                     isRequired
@@ -189,19 +184,17 @@ export const ReportMetadataForm = withForm({
               </form.AppField>
             </GridItem>
             <GridItem noOfColSpan={1}>
-              <form.AppField
-                name='language'
-                validators={{ onChange: required('Select at least one language') }}
-              >
+              <form.AppField name='language'>
                 {(field) => (
                   <field.LanguageSelectField
-                    isRequired
                     isLoading={taxonomiesLoading || !taxonomies}
-                    label='Language'
-                    options={taxonomies?.languages.map((item) => ({
-                      label: item.name,
-                      value: item.code,
-                    }))}
+                    label='UN Languages'
+                    options={taxonomies?.languages
+                      .filter((l) => UN_LANGUAGES.includes(l.name))
+                      .map((item) => ({
+                        label: item.name,
+                        value: item.code,
+                      }))}
                   />
                 )}
               </form.AppField>

@@ -55,3 +55,5 @@ export const STATUSES = [
 
 export const API_BASE =
   'https://hdpnexusapi-g2erbhe2hhb6bvfd.westeurope-01.azurewebsites.net/api/v1';
+
+export const UN_LANGUAGES = ['English', 'French', 'Russian', 'Spanish', 'Arabic', 'Chinese'];

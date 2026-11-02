@@ -6,20 +6,21 @@ import {
   RouterProvider,
 } from '@tanstack/react-router';
 import { Toaster } from '@undp/design-system-react/Toaster';
-import { StrictMode } from 'react';
+import { lazy, StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import FooterEl from './components/Footer';
 import HeaderEl from './components/Header';
 import * as TanStackQueryProvider from './integration/tanstack-query';
+import createAddReportRoute from './routes/AddResource/addResource.route';
 import createAllReportsRoute from './routes/AllResources/allResources.route';
+import createLoginRoute from './routes/Login/login.route';
+import { metaDataDefinition } from './utils/metaDataDefinition';
 
 import './styles/fonts.css';
 import './styles/style.css';
-import { ChatbotUI } from './components/ChatUI';
-import createAddReportRoute from './routes/AddResource/addResource.route';
-import createLoginRoute from './routes/Login/login.route';
-import { metaDataDefinition } from './utils/metaDataDefinition';
+
+const ChatbotUI = lazy(() => import('./components/ChatUI').then((m) => ({ default: m.ChatbotUI })));
 
 const rootRoute = createRootRoute({
   head: () => ({ meta: metaDataDefinition() }),
@@ -32,7 +33,9 @@ const rootRoute = createRootRoute({
         </div>
       </main>
       <FooterEl />
-      <ChatbotUI />
+      <Suspense fallback={null}>
+        <ChatbotUI />
+      </Suspense>
       <Toaster />
     </div>
   ),
