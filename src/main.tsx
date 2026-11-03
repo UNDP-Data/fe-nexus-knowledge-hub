@@ -2,6 +2,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  HeadContent,
   Outlet,
   RouterProvider,
 } from '@tanstack/react-router';
@@ -25,19 +26,22 @@ const ChatbotUI = lazy(() => import('./components/ChatUI').then((m) => ({ defaul
 const rootRoute = createRootRoute({
   head: () => ({ meta: metaDataDefinition() }),
   component: () => (
-    <div className='flex min-h-screen flex-col gap-0'>
-      <HeaderEl />
-      <main className='flex grow flex-col justify-start'>
-        <div className='flex flex-col justify-start'>
-          <Outlet />
-        </div>
-      </main>
-      <FooterEl />
-      <Suspense fallback={null}>
-        <ChatbotUI />
-      </Suspense>
-      <Toaster />
-    </div>
+    <>
+      <HeadContent />
+      <div className='flex min-h-screen flex-col gap-0'>
+        <HeaderEl />
+        <main className='flex grow flex-col justify-start'>
+          <div className='flex flex-col justify-start'>
+            <Outlet />
+          </div>
+        </main>
+        <FooterEl />
+        <Suspense fallback={null}>
+          <ChatbotUI />
+        </Suspense>
+        <Toaster />
+      </div>
+    </>
   ),
 });
 
@@ -45,6 +49,13 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: App,
+  head: () => ({
+    meta: metaDataDefinition({
+      title: 'Nexus Knowledge Hub',
+      description: 'Reports, guidance and tools across humanitarian, development and peace.',
+      path: '/',
+    }),
+  }),
 });
 
 const routeTree = rootRoute.addChildren([
