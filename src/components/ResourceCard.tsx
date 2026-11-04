@@ -6,7 +6,6 @@ import {
   CardFooter,
   CardHeader,
   CardImage,
-  CardTag,
   CardTitle,
 } from '@undp/design-system-react/Card';
 import { Spacer } from '@undp/design-system-react/Spacer';
@@ -24,7 +23,6 @@ export function ResourceCard({
   return (
     <Card backgroundColor='background' size='full' variant='with-image' className='h-full'>
       <CardHeader>
-        <CardTag className='pb-4!'>{resource.document_type}</CardTag>
         <CardImage
           src={
             resource.assets?.find((el) => el.role === 'banner')?.url ||

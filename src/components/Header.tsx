@@ -7,6 +7,7 @@ import {
   HeaderMainNavUnit,
   HeaderMenuUnit,
 } from '@undp/design-system-react/Header';
+import { ExternalLink } from 'lucide-react';
 import { SESSION_STORAGE_NAME } from '@/constants';
 import { isAdmin } from '@/utils/isAdmin';
 
@@ -20,6 +21,15 @@ export default function HeaderEl() {
           <Link to='/'>Home</Link>
           <Link to='/all-resources'>All Resources</Link>
           <Link to='/add-resource'>Add Resource</Link>
+          <a
+            href='https://www.undp.org/crisis/academy/nexus'
+            target='_blank'
+            rel='noopener'
+            className='flex items-center gap-1'
+          >
+            Nexus Academy
+            <ExternalLink size={14} />
+          </a>
         </HeaderMenuUnit>
       </HeaderMainNavUnit>
       {isUserAdmin && (

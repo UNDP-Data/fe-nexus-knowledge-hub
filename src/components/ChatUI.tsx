@@ -157,7 +157,7 @@ function ReportDrawer({ resourceId }: { resourceId: string }) {
 }
 
 export function ChatbotUI() {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(true);
   const [inputString, setInputString] = useState('');
   const [clickedResource, setClickResource] = useState<string | undefined>(undefined);
   const [conversation, setConversation] = useState<ConversationDataType[]>([

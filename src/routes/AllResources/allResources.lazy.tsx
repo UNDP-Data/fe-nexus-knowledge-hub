@@ -355,7 +355,7 @@ export function AllResourcesPage() {
                     </div>
                     <div className='w-full'>
                       <P size='sm' marginBottom='3xs'>
-                        By language
+                        By UN languages
                       </P>
                       <DropdownSelect
                         color='primary'
