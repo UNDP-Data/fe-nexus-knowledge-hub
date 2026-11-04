@@ -6,11 +6,11 @@ import {
   CardFooter,
   CardHeader,
   CardImage,
+  CardTag,
   CardTitle,
 } from '@undp/design-system-react/Card';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { P } from '@undp/design-system-react/Typography';
-import { FileText } from 'lucide-react';
 import type { Publication } from '@/Types';
 
 export function ResourceCard({
@@ -23,6 +23,11 @@ export function ResourceCard({
   return (
     <Card backgroundColor='background' size='full' variant='with-image' className='h-full'>
       <CardHeader>
+        <CardTag className='flex items-center gap-2 pb-4! leading-xs'>
+          {resource.document_type}
+          <div className='h-1 w-1 rounded-full bg-foreground' />
+          {resource.publication_year}
+        </CardTag>
         <CardImage
           src={
             resource.assets?.find((el) => el.role === 'banner')?.url ||
@@ -32,20 +37,6 @@ export function ResourceCard({
         <CardTitle>
           <div>
             <div className='flex flex-wrap gap-2'>
-              <Badge
-                size='lg'
-                rounded='full'
-                color='secondary'
-                className='bg-secondary/20 px-4 py-1'
-              >
-                <div className='flex items-center gap-2 text-blue-700'>
-                  <FileText size={16} />
-                  {resource.document_type}
-                </div>
-              </Badge>
-              <Badge size='lg' rounded='full' color='surface-sm' className='px-4 py-1'>
-                {resource.publication_year}
-              </Badge>
               {isUserAdmin && (
                 <Badge
                   className='w-fit'
