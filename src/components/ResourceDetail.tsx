@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Download as DownloadIcon, ExternalLink } from '@undp/design-system-react/AnimatedIcons';
 import { Badge } from '@undp/design-system-react/Badge';
 import { Button } from '@undp/design-system-react/Button';
 import { cn } from '@undp/design-system-react/cn';
@@ -9,17 +10,7 @@ import { Separator } from '@undp/design-system-react/Separator';
 import { Spacer } from '@undp/design-system-react/Spacer';
 import { toast } from '@undp/design-system-react/ToasterHooks';
 import { H2, H4, H6, P } from '@undp/design-system-react/Typography';
-import {
-  ArrowLeft,
-  Download,
-  DownloadIcon,
-  Edit,
-  ExternalLink,
-  File,
-  FileText,
-  Image,
-  Trash,
-} from 'lucide-react';
+import { ArrowLeft, Download, Edit, File, FileText, Image, Trash } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { API_BASE, DAC_COLORS, HDP_TAG_COLORS, SESSION_STORAGE_NAME } from '@/constants';
 import { useAppForm } from '@/lib/form';
@@ -434,8 +425,13 @@ export function ReportDetail({ report }: { report: Publication }) {
                 <div className='flex flex-wrap items-center gap-4'>
                   {report.external_url && (
                     <a href={report.external_url} target='_blank' rel='noopener noreferrer'>
-                      <Button variant='icon' padding='sm' color='surface-md'>
-                        <ExternalLink size={20} />
+                      <Button
+                        variant='icon'
+                        padding='none'
+                        color='surface-md'
+                        className='h-12 w-12'
+                      >
+                        <ExternalLink className='-mt-1.5 ml-7' />
                       </Button>
                     </a>
                   )}
@@ -450,8 +446,8 @@ export function ReportDetail({ report }: { report: Publication }) {
                       target='_blank'
                       rel='noopener noreferrer'
                     >
-                      <Button variant='icon' padding='sm' color='primary'>
-                        <DownloadIcon size={20} />
+                      <Button variant='icon' padding='sm' color='primary' className='h-12 w-12'>
+                        <DownloadIcon />
                       </Button>
                     </a>
                   )}

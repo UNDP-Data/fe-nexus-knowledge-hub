@@ -24,7 +24,7 @@ import './styles/style.css';
 const ChatbotUI = lazy(() => import('./components/ChatUI').then((m) => ({ default: m.ChatbotUI })));
 
 const rootRoute = createRootRoute({
-  head: () => ({ meta: metaDataDefinition() }),
+  head: () => metaDataDefinition(),
   component: () => (
     <>
       <HeadContent />
@@ -49,13 +49,12 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: App,
-  head: () => ({
-    meta: metaDataDefinition({
+  head: () =>
+    metaDataDefinition({
       title: 'Nexus Knowledge Hub',
       description: 'Reports, guidance and tools across humanitarian, development and peace.',
       path: '/',
     }),
-  }),
 });
 
 const routeTree = rootRoute.addChildren([

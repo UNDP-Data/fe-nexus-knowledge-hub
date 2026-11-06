@@ -1,19 +1,24 @@
-import { Footer, FooterCopyrightUnit, FooterLogoUnit } from '@undp/design-system-react/Footer';
+import {
+  Footer,
+  FooterCopyrightUnit,
+  FooterLogoUnit,
+  FooterSocialMediaIconUnit,
+} from '@undp/design-system-react/Footer';
 
 export default function FooterEl() {
   return (
     <Footer>
-      <FooterLogoUnit />
-      <FooterCopyrightUnit>
-        <a
-          href='https://www.linkedin.com/company/dacunnexusacademy/'
-          target='_blank'
-          rel='noopener'
-          className='hover:opacity-70'
-        >
-          Follow us on LinkedIn
-        </a>
-      </FooterCopyrightUnit>
+      <FooterLogoUnit>
+        <FooterSocialMediaIconUnit
+          socialMediaLinks={[
+            {
+              link: 'https://www.linkedin.com/company/dacunnexusacademy/',
+              socialMedia: 'linkedin',
+            },
+          ]}
+        />
+      </FooterLogoUnit>
+      <FooterCopyrightUnit />
     </Footer>
   );
 }

@@ -21,7 +21,12 @@ export function ResourceCard({
   isUserAdmin?: boolean;
 }) {
   return (
-    <Card backgroundColor='background' size='full' variant='with-image' className='h-full'>
+    <Card
+      backgroundColor='background'
+      size='full'
+      variant='with-image'
+      className='h-full cursor-pointer'
+    >
       <CardHeader>
         <CardTag className='flex items-center gap-2 pb-4! leading-xs'>
           {resource.document_type}

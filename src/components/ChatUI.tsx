@@ -224,7 +224,7 @@ export function ChatbotUI() {
     <>
       <div className='fixed right-8 bottom-8 z-5 flex flex-col items-end'>
         {open && (
-          <div className='mb-4 flex h-100 w-150 flex-col rounded-lg border border-stroke bg-surface lg:h-150'>
+          <div className='mb-4 flex h-100 w-70 flex-col rounded-lg border border-stroke bg-surface sm:w-100 md:w-150 lg:h-150'>
             <div className='flex items-center justify-between gap-8 border-stroke border-b p-4'>
               <P weight='bold' marginBottom='none' size='lg'>
                 NexusChat
