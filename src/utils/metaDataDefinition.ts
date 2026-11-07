@@ -15,7 +15,7 @@ export function metaDataDefinition({
   title,
   description = DEFAULT_DESC,
   path = '/',
-  image = `${SITE_URL}/imgs/og-image.png`,
+  image = `${SITE_URL}/imgs/og-image.jpg`,
   imageAlt = SITE_NAME,
 }: Arg = {}) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
