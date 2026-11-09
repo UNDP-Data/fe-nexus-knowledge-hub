@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import { ExternalLink } from '@undp/design-system-react/AnimatedIcons';
 import { Button } from '@undp/design-system-react/Button';
 import {
@@ -6,9 +5,9 @@ import {
   HeaderActions,
   HeaderLogoUnit,
   HeaderMainNavUnit,
+  HeaderMenuLink,
   HeaderMenuUnit,
 } from '@undp/design-system-react/Header';
-import { ChevronRight } from 'lucide-react';
 import { SESSION_STORAGE_NAME } from '@/constants';
 import { isAdmin } from '@/utils/isAdmin';
 
@@ -24,23 +23,20 @@ export default function HeaderEl() {
       />
       <HeaderMainNavUnit>
         <HeaderMenuUnit>
-          <Link to='/all-resources' className='flex items-center gap-1'>
-            All Resources <ChevronRight className='block text-primary md:hidden' />
-          </Link>
-          <Link to='/add-resource' className='flex items-center gap-1'>
-            Add Resource <ChevronRight className='block text-primary md:hidden' />
-          </Link>
-          <a
+          <HeaderMenuLink href='/all-resources'>All Resources</HeaderMenuLink>
+          <HeaderMenuLink href='/add-resource'>Add Resource</HeaderMenuLink>
+          <HeaderMenuLink
             href='https://www.undp.org/crisis/academy/nexus'
             target='_blank'
-            rel='noopener'
-            className='group flex items-center gap-1'
+            showArrowInMobile={false}
           >
-            Nexus Academy
-            <div className='h-4 w-4 items-center'>
-              <ExternalLink size={32} className='-mt-3.25' />
+            <div className='group flex items-center gap-1'>
+              Nexus Academy
+              <div className='h-4 w-4 items-center'>
+                <ExternalLink size={32} className='-mt-3.25' />
+              </div>
             </div>
-          </a>
+          </HeaderMenuLink>
         </HeaderMenuUnit>
       </HeaderMainNavUnit>
       {isUserAdmin && (
