@@ -33,7 +33,7 @@ export default function HeaderEl() {
             <div className='group flex items-center gap-1'>
               Nexus Academy
               <div className='h-4 w-4 items-center'>
-                <ExternalLink size={32} className='-mt-3.25' />
+                <ExternalLink size={32} className='-mt-3.25 text-primary md:text-content-primary' />
               </div>
             </div>
           </HeaderMenuLink>

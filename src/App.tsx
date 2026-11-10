@@ -67,7 +67,11 @@ function App() {
               the OECD DAC Recommendation on the Humanitarian-Development-Peace (HDP) Nexus. Built
               for practitioners, policymakers and researchers working in fragile and crisis-affected
               contexts, it is designed by the{' '}
-              <A href='https://www.undp.org/crisis/academy/nexus' target='_blank'>
+              <A
+                href='https://www.undp.org/crisis/academy/nexus'
+                target='_blank'
+                variant='background'
+              >
                 Nexus Academy
               </A>{' '}
               as a digital public good: openly accessible, continuously curated, and free to use.
